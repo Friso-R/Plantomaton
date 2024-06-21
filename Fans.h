@@ -3,37 +3,39 @@
 #include <BlockNot.h>
 
 // Define the OneWire bus pin (the data pin of the DS18B20 sensor)
-#define ONE_WIRE_BUS 9  
+#define ONE_WIRE_BUS 32  
 
 // Create instances for OneWire and DallasTemperature classes
 OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature sensors(&oneWire);
+DallasTemperature sensor(&oneWire);
 BlockNot updateTimer(1, SECONDS);
 
 // Motor A and Motor B control pins
-#define IN1 2  // Motor A direction control
-#define IN2 4  // Motor A direction control
-#define PWMA 3 // Motor A speed control (PWM)
+#define IN1 17  // Motor A direction control
+#define IN2 16  // Motor A direction control
+#define PWMA 5 // Motor A speed control (PWM)
 
-#define IN3 5   // Motor B direction control
-#define IN4 7   // Motor B direction control
-#define PWMB 6  // Motor B speed control (PWM)
+#define IN3 4   // Motor B direction control
+#define IN4 2   // Motor B direction control
+#define PWMB 15  // Motor B speed control (PWM)
 
 // Standby pin
-#define STBY 8  // Pin to enable/disable motors
+#define STBY 18  // Pin to enable/disable motors
 
 // Relay pin
-#define RELAY_PIN 3 // Pin to control a relay
+#define RELAY_PIN 33 // Pin to control a relay
 
 // Temperature thresholds
-const float TEMP_START = 28.0; // Temperature at which STBY is set to HIGH
-const float TEMP_MAX = 35.0;   // Temperature at which PWM reaches maximum value
+const float TEMP_START = 25.5; // Temperature at which STBY is set to HIGH
+const float TEMP_MAX = 32.0;   // Temperature at which PWM reaches maximum value
 const float TEMP_LOW = 18.0;   // Temperature below which the relay is activated
 
 // Temperature offset
 const float TEMP_OFFSET = 0.0; // Example offset, adjust as needed
 
 class Fans{
+
+
 public:
   void setup() {
       // Set all control pins as OUTPUT
@@ -47,10 +49,10 @@ public:
       pinMode(RELAY_PIN, OUTPUT);
 
       // Initialize the temperature sensor
-      sensors.begin();
+      sensor.begin();
       
       // Initialize the serial monitor for debugging
-      Serial.begin(9600);
+      Serial.begin(115200);
 
       // Set initial states for standby and relay
       digitalWrite(STBY, LOW);   // Disable motors initially
@@ -60,10 +62,10 @@ public:
   void loop() {
     if(updateTimer.TRIGGERED){
       // Request temperature readings from the DS18B20
-      sensors.requestTemperatures();
+      sensor.requestTemperatures();
 
       // Read the temperature in Celsius and apply the offset
-      float temperatureC = sensors.getTempCByIndex(0) + TEMP_OFFSET;
+      float temperatureC = sensor.getTempCByIndex(0) + TEMP_OFFSET;
 
       // Output temperature reading to the serial monitor
       Serial.print("Temperature: ");

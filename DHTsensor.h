@@ -28,7 +28,7 @@ ComfortState cf;
 /** Flag if task should run */
 bool tasksEnabled = false;
 /** Pin number for DHT11 data pin */
-int dhtPin = 17;
+int dhtPin = 23;
 
 /**
  * initTemp
@@ -43,6 +43,7 @@ class DHT{
 public:
   float humidity;
   float temperature;
+  float vpd;
 
   bool initTemp() {
     byte resultValue = 0;
@@ -104,6 +105,16 @@ public:
     }
   }
 
+  float computeVPD(float temperature, float humditiy){
+    // Calculate saturation vapor pressure (SVP)
+    float svp = 0.6108 * exp((17.27 * temperature) / (temperature + 237.3));
+    
+    // Calculate vapor pressure deficit (VPD)
+    float vpd = svp * (1 - (humidity / 100.0));
+
+    return vpd;
+  }
+
   /**
   * getTemperature
   * Reads temperature from DHT11 sensor
@@ -126,6 +137,7 @@ public:
     float heatIndex = dht.computeHeatIndex(newValues.temperature, newValues.humidity);
     float dewPoint = dht.computeDewPoint(newValues.temperature, newValues.humidity);
     float cr = dht.getComfortRatio(cf, newValues.temperature, newValues.humidity);
+    vpd = computeVPD(newValues.temperature, newValues.humidity);
 
     String comfortStatus;
     switch(cf) {
@@ -161,7 +173,7 @@ public:
         break;
     };
 
-    Serial.println(" T:" + String(newValues.temperature) + " H:" + String(newValues.humidity) + " I:" + String(heatIndex) + " D:" + String(dewPoint) + " " + comfortStatus);
+    Serial.println(" T:" + String(newValues.temperature) + " H:" + String(newValues.humidity) + " I:" + String(heatIndex) + " D:" + String(dewPoint) + " " + comfortStatus + " VPD:" + String(vpd));
     return true;
   }
 

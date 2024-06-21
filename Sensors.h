@@ -4,6 +4,7 @@
 #include "DHTsensor.h"
 #include "RGBsensor.h"
 #include "co2.h"
+#include "SoilMoisture.h"
 #include <BlockNot.h>
 
 BlockNot refresh(5, SECONDS);
@@ -12,13 +13,14 @@ class Sensors {
 public:
   float temperature;
   float humidity;
+  float vpd;
+  int soilMoisture;
   uint16_t* wavelengths;
 
   Sensors() : rgb() {}  // Initialize RGB sensor object
 
-  void processReadings(uint16_t* readings) {
-    wavelengths = readings;
-  }
+  void processReadings(uint16_t* readings) 
+  { wavelengths = readings; }
 
   void setup() {
     humi.setup();
@@ -27,28 +29,33 @@ public:
   }
 
   void update(){
-    refresh_all();
+    if(refresh.TRIGGERED)
+      refresh_all();
   }
 
   void refresh_all(){
-    if(refresh.TRIGGERED){
-        humi.loop();
-        rgb.loop();
-        co2.loop();
-      
-      temperature = humi.humidity;
-      humidity = humi.temperature;
-      wavelengths = rgb.readings;
-      
-      // Process RGB readings
-      processReadings(rgb.readings);
-    }
+    
+    humi.loop();
+    rgb.loop();
+    co2.loop();
+  	
+  
+    temperature  = humi.humidity;
+    humidity     = humi.temperature;
+    vpd          = humi.vpd;
+    wavelengths  = rgb.readings;
+    soilMoisture = sms.getSoilMoisture();
+    
+    // Process RGB readings
+    processReadings(rgb.readings);
+  
   }
 
 private:
   DHT humi;
   RGB rgb;
   SGP co2;
+  SoilMoisture sms;
   
 };
 

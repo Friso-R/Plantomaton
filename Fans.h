@@ -1,6 +1,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <BlockNot.h>
+#include "Relay.h"
 
 // Define the OneWire bus pin (the data pin of the DS18B20 sensor)
 #define ONE_WIRE_BUS 32  
@@ -9,6 +10,7 @@
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensor(&oneWire);
 BlockNot updateTimer(1, SECONDS);
+Relay allfans(33);
 
 // Motor A and Motor B control pins
 #define IN1 17  // Motor A direction control
@@ -21,9 +23,6 @@ BlockNot updateTimer(1, SECONDS);
 
 // Standby pin
 #define STBY 18  // Pin to enable/disable motors
-
-// Relay pin
-#define RELAY_PIN 33 // Pin to control a relay
 
 // Temperature thresholds
 const float TEMP_START = 25.5; // Temperature at which STBY is set to HIGH
@@ -46,7 +45,6 @@ public:
       pinMode(IN4, OUTPUT);
       pinMode(PWMB, OUTPUT);
       pinMode(STBY, OUTPUT);
-      pinMode(RELAY_PIN, OUTPUT);
 
       // Initialize the temperature sensor
       sensor.begin();
@@ -56,7 +54,7 @@ public:
 
       // Set initial states for standby and relay
       digitalWrite(STBY, LOW);   // Disable motors initially
-      digitalWrite(RELAY_PIN, LOW); // Deactivate relay initially
+      allfans.off();
   }
 
   void loop() {
@@ -74,9 +72,9 @@ public:
 
       // Control the relay based on temperature
       if (temperatureC < TEMP_LOW) {
-          digitalWrite(RELAY_PIN, HIGH); // Activate relay if temperature is below 20 degrees (with offset)
+          allfans.on(); // Activate relay if temperature is below 20 degrees (with offset)
       } else {
-          digitalWrite(RELAY_PIN, LOW); // Deactivate relay otherwise
+          allfans.off(); // Deactivate relay otherwise
       }
 
       // Determine if the standby pin should be high

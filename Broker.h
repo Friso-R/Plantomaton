@@ -35,7 +35,11 @@ public:
     setup_wifi();
     client.setCallback(callback); 
     client.setServer(mqtt_server, 1883);
-    client.subscribe("infob3it/student033/gordijn");
+    client.subscribe("infob3it/student033/pomp");
+    client.subscribe("infob3it/student033/lamp");
+    client.subscribe("infob3it/student033/humi");
+    client.subscribe("infob3it/student033/optimal");
+
   }
 
   // This functions connects ESP32 to router
@@ -67,8 +71,9 @@ public:
       reconnect();
       
     if(!client.loop())
-      client.connect("ESP32Client", MQTT_username, MQTT_password);
-topic = "infob3it/student033/" + topic;
+      client.connect("ESP32Greenhouse", MQTT_username, MQTT_password);
+
+    topic = "infob3it/student033/" + topic;
     client.publish(topic.c_str(),   String(message).c_str());
   } 
 
@@ -80,11 +85,14 @@ private:
     while (!client.connected()) {
       Serial.print("Attempting MQTT connection...");
       // Attempt to connect
-      if (client.connect("ESP32Client", MQTT_username, MQTT_password)) {
+      if (client.connect("ESP32Greenhouse", MQTT_username, MQTT_password)) {
         Serial.println("connected");  
         // Subscribe or resubscribe to a topic
         // You can subscribe to more topics
-        client.subscribe("infob3it/student033/gordijn");
+        client.subscribe("infob3it/student033/pomp");
+        client.subscribe("infob3it/student033/lamp");
+        client.subscribe("infob3it/student033/humi");
+        client.subscribe("infob3it/student033/optimal");
       } else {
         Serial.print("failed, rc=");
         Serial.print(client.state());

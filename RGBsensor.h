@@ -10,8 +10,6 @@ public:
   uint16_t readings[12];
 
   void setup() {
-    Serial.begin(9600);
-
     // Wait for communication with the host computer serial monitor
     while (!Serial) {
       delay(1);
@@ -32,7 +30,7 @@ public:
       Serial.println("Error reading all channels!");
       return;
     }
-
+    /*
     Serial.print("ADC0/F1 415nm : ");
     Serial.println(readings[0]);
     Serial.print("ADC1/F2 445nm : ");
@@ -55,6 +53,7 @@ public:
     Serial.println(readings[11]);
 
     Serial.println();
+    */
   }
 };
 

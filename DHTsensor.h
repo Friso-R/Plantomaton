@@ -48,7 +48,7 @@ public:
   bool initTemp() {
     byte resultValue = 0;
     // Initialize temperature sensor
-    dht.setup(dhtPin, DHTesp::DHT11);
+    dht.setup(dhtPin, DHTesp::DHT22);
     Serial.println("DHT initiated");
 
     // Start task to get temperature

@@ -15,12 +15,12 @@ public:
   float humidity;
   float vpd;
   int soilMoisture;
-  uint16_t* wavelengths;
+  uint16_t* waves;
 
   Sensors() : rgb() {}  // Initialize RGB sensor object
 
   void processReadings(uint16_t* readings) 
-  { wavelengths = readings; }
+  { waves = readings; }
 
   void setup() {
     humi.setup();
@@ -43,7 +43,7 @@ public:
     temperature  = humi.humidity;
     humidity     = humi.temperature;
     vpd          = humi.vpd;
-    wavelengths  = rgb.readings;
+    waves        = rgb.readings;
     soilMoisture = sms.getSoilMoisture();
     
     // Process RGB readings

@@ -1,6 +1,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
-#include <BlockNot.h>
+//#include <BlockNot.h>
 #include "Relay.h"
 
 // Define the OneWire bus pin (the data pin of the DS18B20 sensor)
@@ -9,8 +9,8 @@
 // Create instances for OneWire and DallasTemperature classes
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensor(&oneWire);
-BlockNot updateTimer(1, SECONDS);
-Relay allfans(33);
+BlockNot updateTimer(5, SECONDS);
+Relay allfans(19);
 
 // Motor A and Motor B control pins
 #define IN1 17  // Motor A direction control
@@ -25,7 +25,7 @@ Relay allfans(33);
 #define STBY 18  // Pin to enable/disable motors
 
 // Temperature thresholds
-const float TEMP_START = 25.5; // Temperature at which STBY is set to HIGH
+const float TEMP_START = -127.0; // Temperature at which STBY is set to HIGH
 const float TEMP_MAX = 32.0;   // Temperature at which PWM reaches maximum value
 const float TEMP_LOW = 18.0;   // Temperature below which the relay is activated
 
@@ -64,12 +64,12 @@ public:
 
       // Read the temperature in Celsius and apply the offset
       float temperatureC = sensor.getTempCByIndex(0) + TEMP_OFFSET;
-
+      /*
       // Output temperature reading to the serial monitor
       Serial.print("Temperature: ");
       Serial.print(temperatureC);
       Serial.println(" °C");
-
+      */
       // Control the relay based on temperature
       if (temperatureC < TEMP_LOW) {
           allfans.on(); // Activate relay if temperature is below 20 degrees (with offset)

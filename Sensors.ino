@@ -17,6 +17,7 @@ SimButton humi(19);
 Relay lamp    (33);
 Relay lampfans(14);
 Relay pomp    (12);
+Relay appel(33);
 
 float optimal[5];
 
@@ -33,11 +34,15 @@ void loop() {
   sensors.update();
   fans.loop();
 
-  if(update.TRIGGERED)
+  if(update.TRIGGERED){
     pubSensors();
+    regulate();
+  }
 }
 
-
+void regulate(){
+  sensors.temperature > optimal[0] ? appel.on() : appel.off();
+}
 
 void pubSensors(){
   broker.publish("tmp",   String(sensors.temperature));

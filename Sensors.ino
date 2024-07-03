@@ -1,6 +1,5 @@
 #include "Broker.h"
 #include "Sensors.h"
-#include "Fans.h"
 #include "Relay.h"
 #include "SimButton.h"
 #include <BlockNot.h>
@@ -15,7 +14,7 @@ SimButton humi(19);
 
 Relay lamp    (33);
 Relay lampFans(14);
-Relay tmpFans (19)
+Relay tmpFans (19);
 Relay pomp    (12);
 
 float optimal[5];
@@ -24,14 +23,12 @@ void setup() {
   Serial.begin(115200);
   broker.begin();
   sensors.setup();
-  fans.setup();
   broker.publish("start", "start!!!");
 }
 
 void loop() {
   broker.update();
   sensors.update();
-  fans.loop();
 
   if(update.TRIGGERED){
     pubSensors();
@@ -40,7 +37,7 @@ void loop() {
 }
 
 void regulate(){
-  sensors.temperature  > optimal[0] ? fans.on() : fans.off();
+  sensors.temperature  > optimal[0] ? tmpFans.on() : tmpFans.off();
   sensors.soilMoisture > optimal[1] ? pomp.on() : pomp.off();
   //sensors > optimal[] ? .on() : .off();
   if (sensors.humidity < optimal[2])

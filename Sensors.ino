@@ -7,7 +7,6 @@
 
 Broker    broker; 
 Sensors   sensors;
-Fans      fans;
 
 BlockNot  update    (5, SECONDS);
 BlockNot  flowTimer (2, SECONDS);
@@ -15,9 +14,9 @@ BlockNot  flowTimer (2, SECONDS);
 SimButton humi(19);
 
 Relay lamp    (33);
-Relay lampfans(14);
+Relay lampFans(14);
+Relay tmpFans (19)
 Relay pomp    (12);
-Relay appel(33);
 
 float optimal[5];
 
@@ -41,7 +40,11 @@ void loop() {
 }
 
 void regulate(){
-  sensors.temperature > optimal[0] ? appel.on() : appel.off();
+  sensors.temperature  > optimal[0] ? fans.on() : fans.off();
+  sensors.soilMoisture > optimal[1] ? pomp.on() : pomp.off();
+  //sensors > optimal[] ? .on() : .off();
+  if (sensors.humidity < optimal[2])
+    humi.toggle(); 
 }
 
 void pubSensors(){
@@ -71,9 +74,9 @@ void callback(String topic, byte* message, unsigned int length) {
 
   if(topic == "infob3it/student033/lamp"){
     if(messageTemp == "on"){
-      lamp.on();  lampfans.on(); }
+      lamp.on();  lampFans.on(); }
     if(messageTemp == "off"){
-      lamp.off(); lampfans.off();}
+      lamp.off(); lampFans.off();}
   }
   if(topic == "infob3it/student033/pomp"){
     if(messageTemp == "on")

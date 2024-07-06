@@ -21,6 +21,7 @@ float optimal[5];
 
 void setup() {
   Serial.begin(115200);
+  broker.setup_wifi();
   broker.begin();
   sensors.setup();
   broker.publish("start", "start!!!");

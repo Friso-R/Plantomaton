@@ -133,7 +133,7 @@ public:
     }
 
     humidity = newValues.humidity;
-    temperature = newValues.temperature;
+    temperature = 5/9*(newValues.temperature - 32); // C = 5/9 x (F-32)
     float heatIndex = dht.computeHeatIndex(newValues.temperature, newValues.humidity);
     float dewPoint = dht.computeDewPoint(newValues.temperature, newValues.humidity);
     float cr = dht.getComfortRatio(cf, newValues.temperature, newValues.humidity);

@@ -30,7 +30,7 @@ public:
       Serial.println("Error reading all channels!");
       return;
     }
-    /*
+    
     Serial.print("ADC0/F1 415nm : ");
     Serial.println(readings[0]);
     Serial.print("ADC1/F2 445nm : ");
@@ -53,7 +53,7 @@ public:
     Serial.println(readings[11]);
 
     Serial.println();
-    */
+    
   }
 };
 

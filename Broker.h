@@ -3,7 +3,6 @@
 
 #include <WiFi.h>
 #include <PubSubClient.h>
-//#include <BlockNot.h>
 
 // wifi credentials
 //const char* ssid = "A-je-to! 2.4";

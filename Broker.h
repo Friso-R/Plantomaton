@@ -7,8 +7,8 @@
 // wifi credentials
 //const char* ssid = "A-je-to! 2.4";
 //const char* password = "HoldTheDoor!187";
-const char* ssid = "Appels";
-const char* password = "R!kwjH0acuEP8JE";
+const char* ssid = "Appels_IoT";
+const char* password = "GoedWachtwoord51";
 
 // MQTT broker credentials
 const char* MQTT_username = "student033"; 

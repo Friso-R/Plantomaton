@@ -10,7 +10,7 @@ Sensors   sensors;
 BlockNot  update    (5, SECONDS);
 BlockNot  flowTimer (2, SECONDS);
 
-SimButton humi(19);
+SimButton humi(18);
 
 Relay lamp    (33);
 Relay lampFans(27);

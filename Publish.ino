@@ -26,7 +26,7 @@ void callback(String topic, byte* message, unsigned int length) {
   if(topic == "infob3it/student033/lamp"){
     if(messageTemp == "on"){
       lamp.on();  
-      lampFans.on()
+      lampFans.on();
       broker.publish("gordijn", "updown"); 
       }
     if(messageTemp == "off"){

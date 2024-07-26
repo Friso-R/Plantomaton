@@ -1,7 +1,7 @@
 void pubSensors(){
   broker.publish("tmp",   String(sensors.temperature));
   broker.publish("vocht", String(sensors.humidity));
-  broker.publish("vpd",   String(sensors.vpd));
+  //broker.publish("vpd",   String(sensors.vpd));
   broker.publish("soil",  String(sensors.soilMoisture));
 
   broker.publish("F1", String(sensors.waves[0]));

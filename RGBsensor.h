@@ -17,7 +17,7 @@ public:
     
     if (!as7341.begin()) {
       Serial.println("Could not find AS7341");
-      while (1) { delay(10); }
+      return;
     }
     
     as7341.setATIME(100);
@@ -27,7 +27,7 @@ public:
 
   void loop() {
     if (!as7341.readAllChannels(readings)) {
-      Serial.println("Error reading all channels!");
+      Serial.println("RGB sensor - Error reading all channels!");
       return;
     }
     

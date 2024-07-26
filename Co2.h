@@ -24,8 +24,8 @@ void setup() {
   Serial.println("SGP30 test");
 
   if (! sgp.begin()){
-    Serial.println("Sensor not found :(");
-    while (1);
+    Serial.println("CO2 Sensor not found :(");
+    return;
   }
   Serial.print("Found SGP30 serial #");
   Serial.print(sgp.serialnumber[0], HEX);
@@ -44,14 +44,14 @@ void loop() {
   //sgp.setHumidity(getAbsoluteHumidity(temperature, humidity));
 
   if (! sgp.IAQmeasure()) {
-    Serial.println("Measurement failed");
+    Serial.println("CO2 measurement failed");
     return;
   }
   Serial.print("TVOC "); Serial.print(sgp.TVOC); Serial.print(" ppb\t");
   Serial.print("eCO2 "); Serial.print(sgp.eCO2); Serial.println(" ppm");
 
   if (! sgp.IAQmeasureRaw()) {
-    Serial.println("Raw Measurement failed");
+    Serial.println("Raw CO2 Measurement failed");
     return;
   }
   Serial.print("Raw H2 "); Serial.print(sgp.rawH2); Serial.print(" \t");
@@ -63,7 +63,7 @@ void loop() {
 
     uint16_t TVOC_base, eCO2_base;
     if (! sgp.getIAQBaseline(&eCO2_base, &TVOC_base)) {
-      Serial.println("Failed to get baseline readings");
+      Serial.println("Failed to get CO2 baseline readings");
       return;
     }
     Serial.print("****Baseline values: eCO2: 0x"); Serial.print(eCO2_base, HEX);

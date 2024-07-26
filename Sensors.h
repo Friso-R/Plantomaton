@@ -13,7 +13,7 @@ class Sensors {
 public:
   float temperature;
   float humidity;
-  float vpd;
+  //float vpd;
   int soilMoisture;
   uint16_t* waves;
 
@@ -40,9 +40,9 @@ public:
     co2.loop();
   	
   
-    temperature  = humi.humidity;
-    humidity     = humi.temperature;
-    vpd          = humi.vpd;
+    temperature  = humi.h;
+    humidity     = humi.t;
+    //vpd          = humi.vpd;
     waves        = rgb.readings;
     soilMoisture = sms.getSoilMoisture();
     
@@ -52,7 +52,7 @@ public:
   }
 
 private:
-  DHT humi;
+  DHT21xxx humi;
   RGB rgb;
   SGP co2;
   SoilMoisture sms;

@@ -11,10 +11,13 @@ const char* ssid = "Appels_IoT";
 const char* password = "GoedWachtwoord51";
 
 // MQTT broker credentials
-const char* MQTT_username = "student033"; 
-const char* MQTT_password = "U5rlK4N8"; 
+const char* MQTT_username = "leendertr"; 
+const char* MQTT_password = "Halt2001"; 
+const char* mqtt_server = "192.168.1.213";
 
-const char* mqtt_server = "science-vs352.science.uu.nl";
+//const char* MQTT_username = "student033"; 
+//const char* MQTT_password = "U5rlK4N8"; 
+//const char* mqtt_server = "science-vs352.science.uu.nl";
 
 // Initializes the espClient
 WiFiClient    espClient;

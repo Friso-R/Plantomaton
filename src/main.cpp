@@ -30,7 +30,7 @@ void pubSensors();
 void callback(String topic, byte* message, unsigned int length);
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   wifi.connect();
   broker.begin();
   sensors.setup();

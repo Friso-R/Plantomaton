@@ -6,6 +6,7 @@
 #include "Sensors.h"
 #include "Relay.h"
 #include "SimButton.h"
+#include "ServoMotor.h"
 
 WiFiSetup wifi;
 Broker    broker; 
@@ -14,7 +15,8 @@ Sensors   sensors;
 BlockNot  update    (5, SECONDS);
 BlockNot  flowTimer (2, SECONDS);
 
-SimButton humi(18);
+SimButton humi  (18);
+Motor     servo (something);
 
 Relay lamp    (33);
 Relay lampFans(27);
@@ -30,11 +32,11 @@ void pubSensors();
 void callback(String topic, byte* message, unsigned int length);
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   wifi.connect();
   broker.begin();
   sensors.setup();
-  broker.publish("start", "start!!!");
+  broker.publish("status", "start");
 }
 
 void loop() {
@@ -95,20 +97,18 @@ void callback(String topic, byte* message, unsigned int length) {
     if(messageTemp == "on"){
       lamp.on();  
       lampFans.on();
-      broker.publish("gordijn", "updown"); 
+      broker.publish("gordijn", "down"); 
       }
     if(messageTemp == "off"){
       lamp.off(); 
       lampFans.off();}
   }
   if(topic == "infob3it/student033/pomp"){
-    if(messageTemp == "on")
-      pomp.on();
-    if(messageTemp == "off")
-      pomp.off();    
+    if(messageTemp == "on")  pomp.on();
+    if(messageTemp == "off") pomp.off();    
   }
   if(topic == "infob3it/student033/humi"){
-    if(messageTemp == "onoff")
+    if(messageTemp == "toggle")
       humi.toggle();
   }
   if(topic == "infob3it/student033/optimal"){
@@ -118,5 +118,9 @@ void callback(String topic, byte* message, unsigned int length) {
     for (i=0; i<5; i++) {
       Serial.println(String(optimal[i]));
     }
+  }
+  if(topic == "infob3it/student033/servo"){
+    if(messageTemp == "open")  servo.Open();
+    if(messageTemp == "close") servo.Close();  
   }
 }

@@ -16,7 +16,7 @@ BlockNot  update    (5, SECONDS);
 BlockNot  flowTimer (2, SECONDS);
 
 SimButton humi  (18);
-Motor     servo (something);
+Motor     servo (17);
 
 Relay lamp    (33);
 Relay lampFans(27);

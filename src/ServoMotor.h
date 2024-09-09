@@ -1,17 +1,18 @@
 
-#include <Servo.h>
+#include <ESP32Servo.h>
 
 class Motor
 {
   Servo servo;
   int pin;
 
+public:
+
   Motor(int servo_pin){
     pin = servo_pin;
     Attach();
   }
 
-public:   
   void Attach(){  servo.attach(pin);  }
   void Detach(){  servo.detach();     }
   

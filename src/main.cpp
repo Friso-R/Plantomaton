@@ -94,6 +94,7 @@ void callback(String topic, byte* message, unsigned int length) {
     msg += (char)message[i];
     
   if(topic == "infob3it/student033/lamp/+") {
+    msg == "on" ? lampFans.on() : lampFans.off();
     if(topic == "infob3it/student033/lamp/1") msg == "on" ? lamp1.on() : lamp1.off();
     if(topic == "infob3it/student033/lamp/2") msg == "on" ? lamp2.on() : lamp2.off();
     if(topic == "infob3it/student033/lamp/3") msg == "on" ? lamp3.on() : lamp3.off();

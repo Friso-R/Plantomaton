@@ -15,10 +15,13 @@ Sensors   sensors;
 BlockNot  update    (5, SECONDS);
 BlockNot  flowTimer (2, SECONDS);
 
-SimButton humi  (18);
-Motor     servo (17);
+SimButton  humi  (18);
+ServoMotor servo (17);
 
-Relay lamp    (33);
+Relay lamp1   (33);
+Relay lamp2   (33);
+Relay lamp3   (33);
+
 Relay lampFans(27);
 Relay tmpFans (14);
 Relay pomp    (12);
@@ -36,7 +39,7 @@ void setup() {
   wifi.connect();
   broker.begin();
   sensors.setup();
-  broker.publish("status", "start");
+  broker.publish("status/kas", "online");
 }
 
 void loop() {
@@ -53,9 +56,8 @@ void regulate(){
   sensors.temperature  > optimal[0] ? tmpFans.on() : tmpFans.off();
   sensors.soilMoisture > optimal[1] ? pomp.on()    : pomp.off(); //3000 tot 1300
   sensors.humidity     > optimal[2] ? tmpFans.on() : tmpFans.off();
-  sensors.waves[10]    < optimal[3] ? lamp.on()    : lamp.off();
-  if (sensors.humidity < optimal[2])
-    humi.toggle(); 
+  //sensors.waves[10]    < optimal[3] ? lamp.on()    : lamp.off();
+  if (sensors.humidity < optimal[2])  humi.toggle(); 
 }
 
 void SupplyWater(){
@@ -86,41 +88,32 @@ void pubSensors(){
 
 // This function is executed when some device publishes a message to a topic that the ESP32 is subscribed to
 void callback(String topic, byte* message, unsigned int length) {
-  String messageTemp;
+  String msg;
 
   for (int i = 0; i < length; i++)  
-    messageTemp += (char)message[i];
+    msg += (char)message[i];
     
-  broker.publish(topic, "sent!!!");
-
-  if(topic == "infob3it/student033/lamp"){
-    if(messageTemp == "on"){
-      lamp.on();  
-      lampFans.on();
-      broker.publish("gordijn", "down"); 
-      }
-    if(messageTemp == "off"){
-      lamp.off(); 
-      lampFans.off();}
+  if(topic == "infob3it/student033/lamp/+") {
+    if(topic == "infob3it/student033/lamp/1") msg == "on" ? lamp1.on() : lamp1.off();
+    if(topic == "infob3it/student033/lamp/2") msg == "on" ? lamp2.on() : lamp2.off();
+    if(topic == "infob3it/student033/lamp/3") msg == "on" ? lamp3.on() : lamp3.off();
   }
-  if(topic == "infob3it/student033/pomp"){
-    if(messageTemp == "on")  pomp.on();
-    if(messageTemp == "off") pomp.off();    
+  else if(topic == "infob3it/student033/lamp"){
+    if(msg == "on")  pomp.on();
+    if(msg == "off") pomp.off();    
   }
-  if(topic == "infob3it/student033/humi"){
-    if(messageTemp == "toggle")
-      humi.toggle();
+  else if(topic == "infob3it/student033/pomp"){
+    if(msg == "on")  pomp.on();
+    if(msg == "off") pomp.off();    
   }
-  if(topic == "infob3it/student033/optimal"){
-    sscanf(messageTemp.c_str(), "%f %f %f %f %f", &optimal[0], &optimal[1], &optimal[2], &optimal[3], &optimal[4]);
-
-    int i;
-    for (i=0; i<5; i++) {
-      Serial.println(String(optimal[i]));
-    }
-  }
-  if(topic == "infob3it/student033/servo"){
-    if(messageTemp == "open")  servo.Open();
-    if(messageTemp == "close") servo.Close();  
+  else if(topic == "infob3it/student033/humi")
+    if(msg == "toggle") humi.toggle();
+  
+  else if(topic == "infob3it/student033/optimal")
+    sscanf(msg.c_str(), "%f %f %f %f %f", &optimal[0], &optimal[1], &optimal[2], &optimal[3], &optimal[4]);
+  
+  else if(topic == "infob3it/student033/servo"){
+    if(msg == "open")  servo.Open();
+    if(msg == "close") servo.Close();  
   }
 }

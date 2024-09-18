@@ -5,10 +5,10 @@
 
 class WiFiSetup{
 private:
-  const char* ssid = "Appels_IoT";
-  const char* password = "GoedWachtwoord51";
-  //const char* ssid = "A-je-to! 2.4";
-  //const char* password = "HoldTheDoor!187";
+  //const char* ssid = "Appels_IoT";
+  //const char* password = "GoedWachtwoord51";
+  const char* ssid = "A-je-to! 2.4";
+  const char* password = "HoldTheDoor!187";
 
 public:
    // This functions connects ESP32 to router

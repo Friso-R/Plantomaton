@@ -10,11 +10,6 @@ public:
   uint16_t readings[12];
 
   void setup() {
-    // Wait for communication with the host computer serial monitor
-    while (!Serial) {
-      delay(1);
-    }
-    
     if (!as7341.begin()) {
       Serial.println("Could not find AS7341");
       return;

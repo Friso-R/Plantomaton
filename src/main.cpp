@@ -44,7 +44,7 @@ void setup() {
 
 void loop() {
   broker.update();
-  sensors.update();
+  //sensors.update();
 
   if(update.TRIGGERED){
     pubSensors();
@@ -99,9 +99,12 @@ void callback(String topic, byte* message, unsigned int length) {
     if(topic == "infob3it/student033/lamp/2") msg == "on" ? lamp2.on() : lamp2.off();
     if(topic == "infob3it/student033/lamp/3") msg == "on" ? lamp3.on() : lamp3.off();
   }
-  else if(topic == "infob3it/student033/lamp"){
-    if(msg == "on")  pomp.on();
-    if(msg == "off") pomp.off();    
+  else if(topic == "infob3it/student033/servo"){
+    Serial.println("Servoo");
+    if(msg == "open"){
+      servo.Open();}
+    else if(msg == "close"){
+      servo.Close();  }
   }
   else if(topic == "infob3it/student033/pomp"){
     if(msg == "on")  pomp.on();
@@ -109,12 +112,6 @@ void callback(String topic, byte* message, unsigned int length) {
   }
   else if(topic == "infob3it/student033/humi")
     if(msg == "toggle") humi.toggle();
-  
   else if(topic == "infob3it/student033/optimal")
     sscanf(msg.c_str(), "%f %f %f %f %f", &optimal[0], &optimal[1], &optimal[2], &optimal[3], &optimal[4]);
-  
-  else if(topic == "infob3it/student033/servo"){
-    if(msg == "open")  servo.Open();
-    if(msg == "close") servo.Close();  
-  }
 }

@@ -18,8 +18,6 @@ uint32_t getAbsoluteHumidity(float temperature, float humidity) {
 }
 
 void setup() {
-  while (!Serial) { delay(10); } // Wait for serial console to open!
-
   Serial.println("SGP30 test");
 
   if (! sgp.begin()){

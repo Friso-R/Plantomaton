@@ -15,6 +15,7 @@ public:
   //float vpd;
   int soilMoisture;
   uint16_t* waves;
+  uint16_t eCO2;
 
   Sensors() : rgb() {}  // Initialize RGB sensor object
 
@@ -44,7 +45,7 @@ public:
     //vpd          = humi.vpd;
     waves        = rgb.readings;
     soilMoisture = sms.getSoilMoisture();
-    
+    eCO2         = co2.CO2;
     // Process RGB readings
     processReadings(rgb.readings);
   

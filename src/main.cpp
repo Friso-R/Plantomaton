@@ -56,7 +56,7 @@ void regulate(){
   sensors.temperature  > optimal[0] ? tmpFans.on() : tmpFans.off();
   sensors.soilMoisture > optimal[1] ? pomp.on()    : pomp.off(); //3000 tot 1300
   sensors.humidity     > optimal[2] ? tmpFans.on() : tmpFans.off();
-  //sensors.waves[10]    < optimal[3] ? lamp.on()    : lamp.off();
+//sensors.waves[10]    < optimal[3] ? lamp.on()    : lamp.off();
   if (sensors.humidity < optimal[2])  humi.toggle(); 
 }
 
@@ -71,10 +71,11 @@ void BlockWater(){
 }
 
 void pubSensors(){
-  broker.publish("tmp",   String(sensors.temperature));
-  broker.publish("vocht", String(sensors.humidity));
-  //broker.publish("vpd",   String(sensors.vpd));
-  broker.publish("soil",  String(sensors.soilMoisture));
+  broker.publish("tmp"  , String(sensors.temperature ));
+  broker.publish("vocht", String(sensors.humidity    ));
+//broker.publish("vpd"  , String(sensors.vpd         ));
+  broker.publish("soil" , String(sensors.soilMoisture));
+  broker.publish("CO2"  , String(sensors.eCO2        ));
 
   broker.publish("F1", String(sensors.waves[0]));
   broker.publish("F2", String(sensors.waves[1]));

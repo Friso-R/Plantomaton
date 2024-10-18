@@ -28,7 +28,7 @@ private:
     while (!client.connected()) {
       Serial.print("Attempting MQTT connection...");
 
-      client.connect("ESP32Client", MQTT_username, MQTT_password) ? 
+      client.connect("ESP32KasClient", MQTT_username, MQTT_password) ? 
       connected_succesfully() : retry_connection();
     }
   }
@@ -49,7 +49,6 @@ public:
   void begin(){
     client.setCallback(callback); 
     client.setServer(MQTT_server, 1883);
-    subscriptions();
     connect();
   }
 
@@ -61,7 +60,7 @@ public:
       connect();
       
     if(!client.loop())
-      client.connect("ESP32Client", MQTT_username, MQTT_password);
+      connect();
     
     topic = "infob3it/student033/" + topic;
     client.publish(topic.c_str(),   String(message).c_str());

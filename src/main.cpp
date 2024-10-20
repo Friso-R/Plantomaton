@@ -33,10 +33,13 @@ void SupplyWater();
 void BlockWater();
 void pubSensors();
 void callback(String topic, byte* message, unsigned int length);
+int  schedule(String messageTemp);
+
+bool scheduleMode;
+int timeOn, timeOff;
 
 void setup() {
   Serial.begin(9600);
-  wifi.connect();
   broker.begin();
   sensors.setup();
   broker.publish("status/kas", "online");
@@ -58,6 +61,18 @@ void regulate(){
   sensors.humidity     > optimal[2] ? tmpFans.on() : tmpFans.off();
 //sensors.waves[10]    < optimal[3] ? lamp.on()    : lamp.off();
   if (sensors.humidity < optimal[2])  humi.toggle(); 
+
+  int now = wifi.nowTimeMin();
+  if (now == timeOn ) lamp1.on ();
+  if (now == timeOff) lamp1.off();
+}
+
+int schedule(String messageTemp) {
+  int h, m, timeMin;
+  sscanf(messageTemp.c_str(), "%d:%d:%d", &h, &m);
+
+  timeMin = h*60 + m;
+  return timeMin;
 }
 
 void SupplyWater(){
@@ -99,6 +114,9 @@ void callback(String topic, byte* message, unsigned int length) {
   if(topic == "infob3it/student033/lamp/3") {msg == "on" ? lamp3.on() : lamp3.off();}
 
   if(topic == "infob3it/student033/lampfans") msg == "on" ? lampFans.on() : lampFans.off();
+
+  if(topic == "infob3it/student033/schedule/on")   timeOn  = schedule(msg);
+  if(topic == "infob3it/student033/schedule/off")  timeOff = schedule(msg);
 
   if(topic == "infob3it/student033/servo"){
     if(msg == "open"){

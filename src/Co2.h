@@ -11,7 +11,7 @@ Adafruit_SGP30 sgp;
 class SGP{
 public:
 
-u_int16_t CO2 = sgp.eCO2;
+u_int16_t CO2;
 
 uint32_t getAbsoluteHumidity(float temperature, float humidity) {
     // approximation formula from Sensirion SGP30 Driver Integration chapter 3.15
@@ -49,6 +49,7 @@ void loop() {
   }
   Serial.print("TVOC "); Serial.print(sgp.TVOC); Serial.print(" ppb\t");
   Serial.print("eCO2 "); Serial.print(sgp.eCO2); Serial.println(" ppm");
+  CO2 = sgp.eCO2;
 
   if (! sgp.IAQmeasureRaw()) {
     Serial.println("Raw CO2 Measurement failed");

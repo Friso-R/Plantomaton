@@ -5,6 +5,7 @@
 #include "Broker.h"
 #include "Sensors.h"
 #include "Relay.h"
+#include "Fan.h"
 #include "SimButton.h"
 #include "ServoMotor.h"
 
@@ -23,7 +24,7 @@ Relay lamp2   (33);
 Relay lamp3   (33);
 
 Relay lampFans(27);
-Relay tmpFans (14);
+Fan tmpFan (14);
 Relay pomp    (12);
 
 float optimal[5];
@@ -56,9 +57,9 @@ void loop() {
 }
 
 void regulate(){
-  sensors.temperature  > optimal[0] ? tmpFans.on() : tmpFans.off();
+  sensors.temperature  > optimal[0] ? tmpFan.set(50) : tmpFan.off();
+  sensors.humidity     > optimal[2] ? tmpFan.set(50) : tmpFan.off();
   sensors.soilMoisture > optimal[1] ? pomp.on()    : pomp.off(); //3000 tot 1300
-  sensors.humidity     > optimal[2] ? tmpFans.on() : tmpFans.off();
 //sensors.waves[10]    < optimal[3] ? lamp.on()    : lamp.off();
   if (sensors.humidity < optimal[2])  humi.toggle(); 
 

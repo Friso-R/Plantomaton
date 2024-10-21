@@ -1,5 +1,3 @@
-//#include <Arduino.h>
-
 #ifndef FAN_H
 #define FAN_H
 

@@ -40,8 +40,8 @@ public:
     co2.loop();
   	
   
-    temperature  = humi.h;
-    humidity     = humi.t;
+    temperature  = humi.t;
+    humidity     = humi.h;
     //vpd          = humi.vpd;
     waves        = rgb.readings;
     soilMoisture = sms.getSoilMoisture();

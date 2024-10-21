@@ -20,8 +20,8 @@ SimButton  humi  (18);
 ServoMotor servo (17);
 
 Relay lamp1   (33);
-Relay lamp2   (33);
-Relay lamp3   (33);
+Relay lamp2   (25);
+Relay lamp3   (26);
 
 Relay lampFans(27);
 Fan tmpFan (14);
@@ -41,6 +41,7 @@ int timeOn, timeOff;
 
 void setup() {
   Serial.begin(9600);
+  wifi.connect();
   broker.begin();
   sensors.setup();
   broker.publish("status/kas", "online");

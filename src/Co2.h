@@ -21,8 +21,6 @@ uint32_t getAbsoluteHumidity(float temperature, float humidity) {
 }
 
 void setup() {
-  Serial.println("SGP30 test");
-
   if (! sgp.begin()){
     Serial.println("CO2 Sensor not found :(");
     return;

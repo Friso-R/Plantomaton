@@ -10,7 +10,6 @@ public:
   Fan(int pin){
     FAN_PIN = pin;
     pinMode(pin, OUTPUT);
-    off();
   }
 
   void set(int pwm) { analogWrite(FAN_PIN,  pwm); Serial.println("Fan " + String(FAN_PIN) + " ON!"); }

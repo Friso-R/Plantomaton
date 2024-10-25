@@ -16,16 +16,16 @@ Sensors   sensors;
 BlockNot  update    (5, SECONDS);
 BlockNot  flowTimer (2, SECONDS);
 
-SimButton  humi  (18);
 ServoMotor servo (17);
 
 Relay lamp1   (33);
-Relay lamp2   (25);
+Relay lamp2   (25); 
 Relay lamp3   (26);
 
 Relay lampFans(27);
-Fan tmpFan  (14);
+Fan   tmpFan  (14);
 Relay pomp    (12);
+Relay  humi  (18);
 
 float optimal[5];
 
@@ -34,7 +34,8 @@ void SupplyWater();
 void BlockWater();
 void pubSensors();
 void callback(String topic, byte* message, unsigned int length);
-int  schedule(String messageTemp);
+int  schedule(String timeStr);
+int  fanControl();
 
 bool scheduleMode;
 int timeOn, timeOff;
@@ -42,7 +43,7 @@ int timeOn, timeOff;
 void setup() {
   Serial.begin(9600);
   wifi.connect();
-  broker.begin();
+  broker.begin(); 
   sensors.setup();
   broker.publish("status/kas", "online");
 }
@@ -54,28 +55,35 @@ void loop() {
   if(update.TRIGGERED){
     pubSensors();
     regulate();
+
+    Serial.println(String(sensors.soilMoisture));
   }
 }
 
 void regulate(){
-  sensors.temperature  > optimal[0] ? tmpFan.set(200) : tmpFan.off();
-  sensors.humidity     > optimal[2] ? tmpFan.set(200) : tmpFan.off();
-  sensors.soilMoisture > optimal[1] ? pomp.on()    : pomp.off(); //3000 tot 1300
+  tmpFan.set(fanControl());
+  sensors.soilMoisture > optimal[4] ? pomp.on()    : pomp.off(); //3000 tot 1300
 //sensors.waves[10]    < optimal[3] ? lamp.on()    : lamp.off();
-  if (sensors.humidity < optimal[2])  humi.toggle(); 
-
   int now = wifi.nowTimeMin();
   if (now == timeOn ) lamp1.on ();
   if (now == timeOff) lamp1.off();
-  
 }
 
-int schedule(String messageTemp) {
-  int h, m, timeMin;
-  sscanf(messageTemp.c_str(), "%d:%d:%d", &h, &m);
+int schedule(String timeStr) {
+  int h, m, s, timeMin;
+  sscanf(timeStr.c_str(), "%d:%d:%d", &h, &m, &s);
 
   timeMin = h*60 + m;
   return timeMin;
+}
+
+int fanControl(){
+  float tmp = sensors.temperature;
+  float hum = sensors.humidity;
+
+  if (tmp > optimal[1] || hum > optimal[3]) return 255;
+  if (tmp > optimal[0] || hum > optimal[2]) return 160;
+  return 0;
 }
 
 void SupplyWater(){
@@ -124,15 +132,19 @@ void callback(String topic, byte* message, unsigned int length) {
   if(topic == "infob3it/student033/servo"){
     if(msg == "open"){
       servo.Open();}
-  if(msg == "close"){
+    if(msg == "close"){
       servo.Close();  }
   }
   if(topic == "infob3it/student033/pomp"){
     if(msg == "on")  pomp.on();
     if(msg == "off") pomp.off();    
   }
-  if(topic == "infob3it/student033/humi")
-    if(msg == "toggle") humi.toggle();
+  if(topic == "infob3it/student033/humi"){
+    if(msg == "on"){
+      humi.on();}
+    if(msg == "off"){
+      humi.off();  }
+  }
   if(topic == "infob3it/student033/optimal")
     sscanf(msg.c_str(), "%f %f %f %f %f", &optimal[0], &optimal[1], &optimal[2], &optimal[3], &optimal[4]);
 }

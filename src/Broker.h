@@ -28,21 +28,11 @@ private:
     while (!client.connected()) {
       Serial.print("Attempting MQTT connection...");
 
-      client.connect("ESP32KasClient", MQTT_username, MQTT_password) ? 
-      connected_succesfully() : retry_connection();
+      client.connect("ESP32KasClient", MQTT_username, MQTT_password);
+      delay(500);
+      subscriptions();
     }
-  }
-
-  void connected_succesfully(){
-    Serial.println("connected");  
-    subscriptions();
-  }
-
-  void retry_connection(){
-    Serial.print("failed, rc=");
-    Serial.print(client.state());
-    Serial.println(" try again in 5 seconds");
-    delay(5000);
+    Serial.println("connected"); 
   }
 
 public: 
@@ -58,12 +48,9 @@ public:
 
     if (!client.connected()) 
       connect();
-      
-    if(!client.loop())
-      connect();
     
     topic = "infob3it/student033/" + topic;
-    client.publish(topic.c_str(),   String(message).c_str());
+    client.publish(topic.c_str(),   message.c_str());
   }
 };
 

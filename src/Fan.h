@@ -13,7 +13,7 @@ public:
   }
 
   void set(int pwm) { analogWrite(FAN_PIN,  pwm); Serial.println("Fan " + String(FAN_PIN) + " ON!"); }
-  void off(){ digitalWrite(FAN_PIN, LOW); Serial.println("Fan " + String(FAN_PIN) + " OFF!");}
+  void off()        { digitalWrite(FAN_PIN, LOW); Serial.println("Fan " + String(FAN_PIN) + " OFF!");}
 };
 
 #endif

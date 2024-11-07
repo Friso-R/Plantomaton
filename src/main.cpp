@@ -6,7 +6,6 @@
 #include "Sensors.h"
 #include "Relay.h"
 #include "Fan.h"
-#include "SimButton.h"
 #include "ServoMotor.h"
 
 WiFiSetup wifi;
@@ -23,11 +22,12 @@ Relay lamp2   (25);
 Relay lamp3   (26);
 
 Relay lampFans(27);
-Fan   tmpFan  (14);
+Fan   tmpFan  (18);
 Relay pomp    (12);
-Relay  humi  (18);
+Relay humi    (16);
 
-float optimal[5];
+float optimal  [5];
+bool  ledGroup [3];
 
 void regulate();
 void SupplyWater();
@@ -55,18 +55,34 @@ void loop() {
   if(update.TRIGGERED){
     pubSensors();
     regulate();
-
-    Serial.println(String(sensors.soilMoisture));
+    check_schedule();
   }
 }
 
 void regulate(){
   tmpFan.set(fanControl());
-  sensors.soilMoisture > optimal[4] ? pomp.on()    : pomp.off(); //3000 tot 1300
-//sensors.waves[10]    < optimal[3] ? lamp.on()    : lamp.off();
+  sensors.soilMoisture > optimal[4] ? pomp.on() : pomp.off(); //3000 tot 1300
+//sensors.waves[10]    < optimal[3] ? lamp.on() : lamp.off();
+}
+
+void check_schedule(){
   int now = wifi.nowTimeMin();
-  if (now == timeOn ) lamp1.on ();
-  if (now == timeOff) lamp1.off();
+  if (now == timeOn)  ledGroupOn ();
+  if (now == timeOff) ledGroupOff();
+}
+
+void ledGroupOn(){
+  lampFans.on();
+  if(ledGroup[0]) lamp1.on();
+  if(ledGroup[1]) lamp2.on();
+  if(ledGroup[2]) lamp3.on();
+}
+
+void ledGroupOff(){
+  lamp1.off();
+  lamp2.off();
+  lamp3.off();
+  lampFans.off();
 }
 
 int schedule(String timeStr) {
@@ -81,8 +97,11 @@ int fanControl(){
   float tmp = sensors.temperature;
   float hum = sensors.humidity;
 
-  if (tmp > optimal[1] || hum > optimal[3]) return 255;
-  if (tmp > optimal[0] || hum > optimal[2]) return 160;
+  if (tmp > optimal[1] || hum > optimal[3]) 
+    return 255;
+  if (tmp > optimal[0] || hum > optimal[2]) 
+    return 160;
+
   return 0;
 }
 
@@ -134,6 +153,10 @@ void callback(String topic, byte* message, unsigned int length) {
       servo.Open();}
     if(msg == "close"){
       servo.Close();  }
+  }
+  if(topic == "infob3it/student033/ledGroup"){
+    if(msg == "on")  pomp.on();
+    if(msg == "off") pomp.off();
   }
   if(topic == "infob3it/student033/pomp"){
     if(msg == "on")  pomp.on();

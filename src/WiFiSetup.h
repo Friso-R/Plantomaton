@@ -6,14 +6,14 @@
 
 class WiFiSetup {
 private:
-  //const char* ssid = "Appels";
-  //const char* password = "R!kwjH0acuEP8JE";
-const char* ssid = "A-je-to! 2.4";
-const char* password = "HoldTheDoor!187";
+  const char* ssid = "Appels";
+  const char* password = "R!kwjH0acuEP8JE";
+//const char* ssid = "A-je-to! 2.4";
+//const char* password = "HoldTheDoor!187";
 
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 3600;
-const int   daylightOffset_sec = 3600;
+const int   daylightOffset_sec = 0;
 
 public:
 
@@ -40,10 +40,9 @@ int nowTimeMin()
     Serial.println("Failed to obtain time");
     return 0;
   }
-  //Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S"); 
+  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S"); 
   return timeinfo.tm_hour * 60 + timeinfo.tm_min;
 }
-
 };
 
 #endif

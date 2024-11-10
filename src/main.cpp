@@ -36,6 +36,9 @@ void pubSensors();
 void callback(String topic, byte* message, unsigned int length);
 int  schedule(String timeStr);
 int  fanControl();
+void ledGroupOn();
+void ledGroupOff();
+void check_schedule();
 
 bool scheduleMode;
 int timeOn, timeOff;
@@ -154,18 +157,21 @@ void callback(String topic, byte* message, unsigned int length) {
     if(msg == "close"){
       servo.Close();  }
   }
-  if(topic == "infob3it/student033/ledGroup"){
-    if(msg == "on")  pomp.on();
-    if(msg == "off") pomp.off();
-  }
+  if(topic == "infob3it/student033/ledGroup/1"){
+    ledGroup[0] = msg.toInt(); }
+  if(topic == "infob3it/student033/ledGroup/2"){
+    ledGroup[1] = msg.toInt(); }
+  if(topic == "infob3it/student033/ledGroup/3"){
+    ledGroup[1] = msg.toInt(); }
+
   if(topic == "infob3it/student033/pomp"){
     if(msg == "on")  pomp.on();
     if(msg == "off") pomp.off();    
   }
   if(topic == "infob3it/student033/humi"){
-    if(msg == "on"){
-      humi.on();}
     if(msg == "off"){
+      humi.on();}
+    if(msg == "on"){
       humi.off();  }
   }
   if(topic == "infob3it/student033/optimal")

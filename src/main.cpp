@@ -1,47 +1,23 @@
-#include <Arduino.h>
-#include <BlockNot.h>
-
-#include "WiFiSetup.h"
-#include "Broker.h"
-#include "Sensors.h"
-#include "Relay.h"
-#include "Fan.h"
-#include "ServoMotor.h"
+#include "Files.h"
 
 WiFiSetup wifi;
 Broker    broker; 
 Sensors   sensors;
+LedGroup  leds;
 
-BlockNot  update    (5, SECONDS);
-BlockNot  flowTimer (2, SECONDS);
+Fan    sideFans   (18);
+Relay  pomp       (12);
+Switch humidifier (16);
 
-ServoMotor servo (17);
-
-Relay lamp1   (33);
-Relay lamp2   (25); 
-Relay lamp3   (26);
-
-Relay lampFans(27);
-Fan   tmpFan  (18);
-Relay pomp    (12);
-Relay humi    (16);
+ServoMotor servo  (17);
 
 float optimal  [5];
-bool  ledGroup [3];
-
-void regulate();
-void SupplyWater();
-void BlockWater();
-void pubSensors();
-void callback(String topic, byte* message, unsigned int length);
-int  schedule(String timeStr);
-int  fanControl();
-void ledGroupOn();
-void ledGroupOff();
-void check_schedule();
 
 bool scheduleMode;
 int timeOn, timeOff;
+
+BlockNot  update    (5, SECONDS);
+BlockNot  flowTimer (2, SECONDS);
 
 void setup() {
   Serial.begin(9600);
@@ -53,9 +29,9 @@ void setup() {
 
 void loop() {
   broker.update();
-  sensors.update();
 
   if(update.TRIGGERED){
+    sensors.refresh();
     pubSensors();
     regulate();
     check_schedule();
@@ -63,29 +39,15 @@ void loop() {
 }
 
 void regulate(){
-  tmpFan.set(fanControl());
+  sideFans.set(fanControl());
   sensors.soilMoisture > optimal[4] ? pomp.on() : pomp.off(); //3000 tot 1300
 //sensors.waves[10]    < optimal[3] ? lamp.on() : lamp.off();
 }
 
 void check_schedule(){
   int now = wifi.nowTimeMin();
-  if (now == timeOn)  ledGroupOn ();
-  if (now == timeOff) ledGroupOff();
-}
-
-void ledGroupOn(){
-  lampFans.on();
-  if(ledGroup[0]) lamp1.on();
-  if(ledGroup[1]) lamp2.on();
-  if(ledGroup[2]) lamp3.on();
-}
-
-void ledGroupOff(){
-  lamp1.off();
-  lamp2.off();
-  lamp3.off();
-  lampFans.off();
+  if (now == timeOn)  leds.ledGroupOn ();
+  if (now == timeOff) leds.ledGroupOff();
 }
 
 int schedule(String timeStr) {
@@ -146,7 +108,7 @@ void callback(String topic, byte* message, unsigned int length) {
   if(topic == "infob3it/student033/lamp/2") {msg == "on" ? lamp2.on() : lamp2.off();}
   if(topic == "infob3it/student033/lamp/3") {msg == "on" ? lamp3.on() : lamp3.off();}
 
-  if(topic == "infob3it/student033/lampfans") msg == "on" ? lampFans.on() : lampFans.off();
+  //if(topic == "infob3it/student033/lampfans") msg == "on" ? lampFans.on() : lampFans.off();
 
   if(topic == "infob3it/student033/schedule/on")   timeOn  = schedule(msg);
   if(topic == "infob3it/student033/schedule/off")  timeOff = schedule(msg);
@@ -158,11 +120,11 @@ void callback(String topic, byte* message, unsigned int length) {
       servo.Close();  }
   }
   if(topic == "infob3it/student033/ledGroup/1"){
-    ledGroup[0] = msg.toInt(); }
+    leds.ledGroup[0] = msg.toInt(); }
   if(topic == "infob3it/student033/ledGroup/2"){
-    ledGroup[1] = msg.toInt(); }
+    leds.ledGroup[1] = msg.toInt(); }
   if(topic == "infob3it/student033/ledGroup/3"){
-    ledGroup[1] = msg.toInt(); }
+    leds.ledGroup[1] = msg.toInt(); }
 
   if(topic == "infob3it/student033/pomp"){
     if(msg == "on")  pomp.on();
@@ -170,9 +132,9 @@ void callback(String topic, byte* message, unsigned int length) {
   }
   if(topic == "infob3it/student033/humi"){
     if(msg == "off"){
-      humi.on();}
+      humidifier.on();}
     if(msg == "on"){
-      humi.off();  }
+      humidifier.off();  }
   }
   if(topic == "infob3it/student033/optimal")
     sscanf(msg.c_str(), "%f %f %f %f %f", &optimal[0], &optimal[1], &optimal[2], &optimal[3], &optimal[4]);

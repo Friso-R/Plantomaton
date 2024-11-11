@@ -6,8 +6,6 @@
 #include "co2.h"
 #include "SoilMoisture.h"
 
-BlockNot refresh(5, SECONDS);
-
 class Sensors {
 public:
   float temperature;
@@ -17,10 +15,7 @@ public:
   uint16_t* waves;
   uint16_t eCO2;
 
-  Sensors() : rgb() {}  // Initialize RGB sensor object
-
-  void processReadings(uint16_t* readings) 
-  { waves = readings; }
+  //Sensors() : rgb() {}  // Initialize RGB sensor object
 
   void setup() {
     humi.setup();
@@ -28,18 +23,12 @@ public:
     co2.setup();
   }
 
-  void update(){
-    if(refresh.TRIGGERED)
-      refresh_all();
-  }
-
-  void refresh_all(){
+  void refresh(){
     
     humi.loop();
     rgb.loop();
     co2.loop();
   	
-  
     temperature  = humi.t;
     humidity     = humi.h;
     //vpd          = humi.vpd;
@@ -56,6 +45,8 @@ private:
   SGP co2;
   SoilMoisture sms;
   
+  void processReadings(uint16_t* readings) 
+  { waves = readings; }
 };
 
 #endif // SENSORS_H

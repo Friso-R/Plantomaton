@@ -29,7 +29,7 @@ private:
       Serial.print("Attempting MQTT connection...");
 
       client.connect("ESP32KasClient", MQTT_username, MQTT_password);
-      delay(500);
+      delay(2000);
       subscriptions();
     }
     Serial.println("connected"); 
@@ -46,8 +46,11 @@ public:
 
   void publish(String topic, String message) {
 
-    if (!client.connected()) 
+    if (!client.connected()) {
+      WiFi.reconnect();
       connect();
+    }
+      
     
     topic = "infob3it/student033/" + topic;
     client.publish(topic.c_str(),   message.c_str());

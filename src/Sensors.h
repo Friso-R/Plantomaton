@@ -19,15 +19,15 @@ public:
 
   void setup() {
     humi.setup();
-    rgb.setup();
-    co2.setup();
+    //rgb.setup();
+    //co2.setup();
   }
 
   void refresh(){
     
     humi.loop();
-    rgb.loop();
-    co2.loop();
+    //rgb.loop();
+    //co2.loop();
   	
     temperature  = humi.t;
     humidity     = humi.h;

@@ -11,8 +11,7 @@ Switch humidifier (16);
 
 ServoMotor servo  (17);
 
-float optimal  [5];
-
+float optimal[5];
 bool scheduleMode;
 int timeOn, timeOff;
 
@@ -28,6 +27,7 @@ void setup() {
 }
 
 void loop() {
+  
   broker.update();
 
   if(update.TRIGGERED){
@@ -108,23 +108,20 @@ void callback(String topic, byte* message, unsigned int length) {
   if(topic == "infob3it/student033/lamp/2") {msg == "on" ? lamp2.on() : lamp2.off();}
   if(topic == "infob3it/student033/lamp/3") {msg == "on" ? lamp3.on() : lamp3.off();}
 
-  //if(topic == "infob3it/student033/lampfans") msg == "on" ? lampFans.on() : lampFans.off();
+  if(topic == "infob3it/student033/sidefans") msg == "on" ? lampFans.on() : lampFans.off();
 
   if(topic == "infob3it/student033/schedule/on")   timeOn  = schedule(msg);
   if(topic == "infob3it/student033/schedule/off")  timeOff = schedule(msg);
 
   if(topic == "infob3it/student033/servo"){
-    if(msg == "open"){
-      servo.Open();}
-    if(msg == "close"){
-      servo.Close();  }
+    msg == "open" ? servo.Open() : servo.Close();
   }
   if(topic == "infob3it/student033/ledGroup/1"){
     leds.ledGroup[0] = msg.toInt(); }
   if(topic == "infob3it/student033/ledGroup/2"){
     leds.ledGroup[1] = msg.toInt(); }
   if(topic == "infob3it/student033/ledGroup/3"){
-    leds.ledGroup[1] = msg.toInt(); }
+    leds.ledGroup[2] = msg.toInt(); }
 
   if(topic == "infob3it/student033/pomp"){
     if(msg == "on")  pomp.on();

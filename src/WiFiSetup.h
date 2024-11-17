@@ -22,7 +22,7 @@ void connect() {
   int tries = 3;
   while (WiFi.status() != WL_CONNECTED) {
     WiFi.begin(ssid, password);
-    //Serial.println(".");
+    Serial.println(".");
     uint8_t status = WiFi.waitForConnectResult();
     tries--;
     if (tries == 0) ESP.restart();

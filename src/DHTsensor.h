@@ -3,7 +3,7 @@
 
 #include "DHT.h"
 
-#define DHTPIN 23 
+#define DHTPIN 33 
 #define DHTTYPE DHT21   // DHT 21 (AM2301)
 
 DHT dht(DHTPIN, DHTTYPE);

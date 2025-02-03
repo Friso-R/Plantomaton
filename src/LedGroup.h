@@ -1,11 +1,11 @@
 #ifndef LEDGROUP_H
 #define LEDGROUP_H
 
-Relay lamp1(33);
-Relay lamp2(25);
-Relay lamp3(26);
+Relay lamp1(19);
+Relay lamp2(18);
+Relay lamp3(5);
 
-Relay lampFans(27);
+Relay lampFans(17);
 
 class LedGroup {
 public:

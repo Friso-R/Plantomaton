@@ -40,7 +40,6 @@ public:
     //waves        = rgb.readings;
     soilMoisture = sms.getSoilMoisture();
     eCO2         = co2.CO2;
-
     // Process RGB readings
     //processReadings(rgb.readings);
   }
@@ -54,6 +53,8 @@ private:
   
   void processReadings(uint16_t* readings) 
   { waves = readings; }
+  
 };
+
 
 #endif // SENSORS_H

@@ -5,11 +5,11 @@ Broker    broker;
 Sensors   sensors;
 LedGroup  leds;
 
-Fan    sideFans   (18);
-Relay  pomp       (12);
-Switch humidifier (16);
+Fan    sideFans   (14);
+Relay  pomp       (4);
+Switch humidifier (26);
 
-ServoMotor servo  (17);
+ServoMotor servo  (23);
 
 float optimal[5];
 bool scheduleMode;
@@ -86,7 +86,7 @@ void pubSensors(){
 //broker.publish("vpd"  , String(sensors.vpd         ));
   broker.publish("soil" , String(sensors.soilMoisture));
   broker.publish("CO2"  , String(sensors.eCO2        ));
-
+/*
   broker.publish("F1", String(sensors.waves[0]));
   broker.publish("F2", String(sensors.waves[1]));
   broker.publish("F3", String(sensors.waves[2]));
@@ -95,6 +95,7 @@ void pubSensors(){
   broker.publish("F6", String(sensors.waves[7]));
   broker.publish("F7", String(sensors.waves[8]));
   broker.publish("F8", String(sensors.waves[9]));
+  */
 }
 
 // This function is executed when some device publishes a message to a topic that the ESP32 is subscribed to

@@ -13,9 +13,14 @@ public:
   float humidity;
   float lux;
   //float vpd;
-  int soilMoisture;
+  
   uint16_t* waves;
   uint16_t eCO2;
+
+  int16_t soil_0;  
+  int16_t soil_1;  
+  int16_t soil_2;  
+  int16_t soil_3;
 
   //Sensors() : rgb() {}  // Initialize RGB sensor object
 
@@ -30,6 +35,7 @@ public:
     
     humi.loop();
     flux.update();
+    sms.update();
     //rgb.loop();
     //co2.loop();
   	
@@ -38,8 +44,13 @@ public:
     lux          = flux.lux;
     //vpd          = humi.vpd;
     //waves        = rgb.readings;
-    soilMoisture = sms.getSoilMoisture();
     eCO2         = co2.CO2;
+
+    soil_0       = sms.v0;
+    soil_1       = sms.v1;
+    soil_2       = sms.v2;
+    soil_3       = sms.v3;
+
     // Process RGB readings
     //processReadings(rgb.readings);
   }

@@ -40,7 +40,7 @@ void loop() {
 
 void regulate(){
   sideFans.set(fanControl());
-  sensors.soilMoisture > optimal[4] ? pomp.on() : pomp.off(); //3000 tot 1300
+  sensors.soil_3 > optimal[4] ? pomp.on() : pomp.off(); //3000 tot 1300
 //sensors.waves[10]    < optimal[3] ? lamp.on() : lamp.off();
 }
 
@@ -84,7 +84,7 @@ void pubSensors(){
   broker.publish("tmp"  , String(sensors.temperature ));
   broker.publish("vocht", String(sensors.humidity    ));
 //broker.publish("vpd"  , String(sensors.vpd         ));
-  broker.publish("soil" , String(sensors.soilMoisture));
+  broker.publish("soil" , String(sensors.soil_3));
   broker.publish("CO2"  , String(sensors.eCO2        ));
 /*
   broker.publish("F1", String(sensors.waves[0]));

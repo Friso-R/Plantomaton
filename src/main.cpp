@@ -85,12 +85,12 @@ void BlockWater(){
 }
 
 void pubSensors(){
-  broker.publish("tmp"  , String(sensors.tmp_DHT ));
-  broker.publish("soiltmp"  , String(sensors.tmp_DHT ));
-  broker.publish("vocht", String(sensors.humidity    ));
-//broker.publish("vpd"  , String(sensors.vpd         ));
-  broker.publish("soil" , String(sensors.soil_3));
-  broker.publish("CO2"  , String(sensors.eCO2        ));
+  broker.publish("tmp/air"  , String(sensors.tmp_DHT ));
+  broker.publish("tmp/soil" , String(sensors.tmp_soil));
+  broker.publish("vocht"    , String(sensors.humidity));
+//broker.publish("vpd"      , String(sensors.vpd     ));
+  broker.publish("soil"     , String(sensors.soil_3  ));
+  broker.publish("CO2"      , String(sensors.eCO2    ));
 /*
   broker.publish("F1", String(sensors.waves[0]));
   broker.publish("F2", String(sensors.waves[1]));

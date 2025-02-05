@@ -1,7 +1,8 @@
 #ifndef SENSORS_H
 #define SENSORS_H
 
-#include "DHTsensor.h"
+#include "Tmp_DHT.h"
+#include "Tmp_DS18B20.h"
 //#include "RGBsensor.h"
 #include "co2.h"
 #include "SoilMoisture.h"
@@ -9,7 +10,8 @@
 
 class Sensors {
 public:
-  float temperature;
+  float tmp_DHT;
+  float tmp_soil;
   float humidity;
   float lux;
   //float vpd;
@@ -26,24 +28,27 @@ public:
 
   void setup() {
     humi.setup();
+    tmp.setup();
     flux.setup();
     //rgb.setup();
-    //co2.setup();
+    co2.setup();
   }
 
   void refresh(){
     
     humi.loop();
+    tmp.update();
     flux.update();
     sms.update();
     //rgb.loop();
-    //co2.loop();
+    co2.loop();
   	
-    temperature  = humi.t;
+    tmp_DHT      = humi.t;
+    tmp_soil	   = tmp.tmp;
     humidity     = humi.h;
     lux          = flux.lux;
-    //vpd          = humi.vpd;
-    //waves        = rgb.readings;
+  //vpd          = humi.vpd;
+  //waves        = rgb.readings;
     eCO2         = co2.CO2;
 
     soil_0       = sms.v0;
@@ -56,10 +61,11 @@ public:
   }
 
 private:
-  DHT21xxx humi;
-  //RGB rgb;
-  Flux flux;
-  SGP co2;
+  DHT21xxx     humi;
+  Tmp_DS18B12  tmp;
+  //RGB        rgb;
+  Flux         flux;
+  SGP          co2;
   SoilMoisture sms;
   
   void processReadings(uint16_t* readings) 

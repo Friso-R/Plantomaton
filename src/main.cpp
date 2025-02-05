@@ -7,6 +7,7 @@ LedGroup  leds;
 
 Fan    sideFans   (14);
 Relay  pomp       (4);
+Relay  heater     (16);
 Switch humidifier (26);
 
 ServoMotor servo  (23);
@@ -42,6 +43,9 @@ void regulate(){
   sideFans.set(fanControl());
   sensors.soil_3 > optimal[4] ? pomp.on() : pomp.off(); //3000 tot 1300
 //sensors.waves[10]    < optimal[3] ? lamp.on() : lamp.off();
+  sensors.humidity < optimal[2]  ? humidifier.on() : humidifier.off();
+  sensors.tmp_DHT > optimal[3]  ? heater.on() : heater.off();
+
 }
 
 void check_schedule(){
@@ -59,7 +63,7 @@ int schedule(String timeStr) {
 }
 
 int fanControl(){
-  float tmp = sensors.temperature;
+  float tmp = sensors.tmp_DHT;
   float hum = sensors.humidity;
 
   if (tmp > optimal[1] || hum > optimal[3]) 
@@ -81,7 +85,8 @@ void BlockWater(){
 }
 
 void pubSensors(){
-  broker.publish("tmp"  , String(sensors.temperature ));
+  broker.publish("tmp"  , String(sensors.tmp_DHT ));
+  broker.publish("soiltmp"  , String(sensors.tmp_DHT ));
   broker.publish("vocht", String(sensors.humidity    ));
 //broker.publish("vpd"  , String(sensors.vpd         ));
   broker.publish("soil" , String(sensors.soil_3));
@@ -129,9 +134,9 @@ void callback(String topic, byte* message, unsigned int length) {
     if(msg == "off") pomp.off();    
   }
   if(topic == "infob3it/student033/humi"){
-    if(msg == "off"){
-      humidifier.on();}
     if(msg == "on"){
+      humidifier.on();}
+    if(msg == "off"){
       humidifier.off();  }
   }
   if(topic == "infob3it/student033/optimal")

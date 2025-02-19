@@ -10,8 +10,6 @@ Relay  pomp       (17);
 Relay  heater     (16);
 Switch humidifier (26);
 
-ServoMotor servo  (23);
-
 float optimal[10] = { 
 //val   i actu    factor      
   80, //0 fan     air tmp     lower
@@ -57,7 +55,7 @@ void regulate(){
   sensors.soil_3 > optimal[4] ? pomp.on() : pomp.off(); //3000 tot 1300
 //sensors.waves[10]    < optimal[] ? lamp.on() : lamp.off();
   sensors.humidity < optimal[5]  ? humidifier.on() : humidifier.off();
-  sensors.tmp_DHT < optimal[6]  ? heater.on() : heater.off();
+  sensors.tmp_air < optimal[6]  ? heater.on() : heater.off();
 
 }
 
@@ -76,7 +74,7 @@ int schedule(String timeStr) {
 }
 
 int fanControl(){
-  float tmp = sensors.tmp_DHT;
+  float tmp = sensors.tmp_air;
   float hum = sensors.humidity;
   if (tmp > optimal[1] || hum > optimal[3]) 
     return 255;
@@ -97,13 +95,13 @@ void BlockWater(){
 }
 
 void pubSensors(){
-  broker.publish("tmp/air"  , String(sensors.tmp_DHT ));
+  broker.publish("tmp/air"  , String(sensors.tmp_air ));
   broker.publish("tmp/soil" , String(sensors.tmp_soil));
   broker.publish("vocht"    , String(sensors.humidity));
   broker.publish("lux"      , String(sensors.lux     ));
 //broker.publish("vpd"      , String(sensors.vpd     ));
   broker.publish("soil"     , String(sensors.soil_3  ));
-  broker.publish("CO2"      , String(sensors.eCO2    ));
+//broker.publish("CO2"      , String(sensors.eCO2    ));
 /*
   broker.publish("F1", String(sensors.waves[0]));
   broker.publish("F2", String(sensors.waves[1]));
@@ -118,41 +116,39 @@ void pubSensors(){
 
 // This function is executed when some device publishes a message to a topic that the ESP32 is subscribed to
 void callback(String topic, byte* message, unsigned int length) {
+  topic = topic.substring(4);
   String msg;
 
   for (int i = 0; i < length; i++)  
     msg += (char)message[i];
     
-  if(topic == "infob3it/student033/lamp/1") {msg == "on" ? lamp1.on() : lamp1.off();}
-  if(topic == "infob3it/student033/lamp/2") {msg == "on" ? lamp2.on() : lamp2.off();}
-  if(topic == "infob3it/student033/lamp/3") {msg == "on" ? lamp3.on() : lamp3.off();}
+  if(topic == "lamp/1") {msg == "on" ? lamp1.on() : lamp1.off();}
+  if(topic == "lamp/2") {msg == "on" ? lamp2.on() : lamp2.off();}
+  if(topic == "lamp/3") {msg == "on" ? lamp3.on() : lamp3.off();}
 
-  if(topic == "infob3it/student033/sidefans") msg == "on" ? sideFans.set(255) : sideFans.off();
+  if(topic == "sidefans") msg == "on" ? sideFans.set(255) : sideFans.off();
 
-  if(topic == "infob3it/student033/schedule/on")   timeOn  = schedule(msg);
-  if(topic == "infob3it/student033/schedule/off")  timeOff = schedule(msg);
+  if(topic == "schedule/on")   timeOn  = schedule(msg);
+  if(topic == "schedule/off")  timeOff = schedule(msg);
 
-  if(topic == "infob3it/student033/servo"){
-    msg == "open" ? servo.Open() : servo.Close();
-  }
-  if(topic == "infob3it/student033/ledGroup/1"){
+  if(topic == "ledGroup/1"){
     leds.ledGroup[0] = msg.toInt(); }
-  if(topic == "infob3it/student033/ledGroup/2"){
+  if(topic == "ledGroup/2"){
     leds.ledGroup[1] = msg.toInt(); }
-  if(topic == "infob3it/student033/ledGroup/3"){
+  if(topic == "ledGroup/3"){
     leds.ledGroup[2] = msg.toInt(); }
 
-  if(topic == "infob3it/student033/pomp"){
+  if(topic == "pomp"){
     if(msg == "on")  pomp.on();
     if(msg == "off") pomp.off();    
   }
-  if(topic == "infob3it/student033/humi"){
+  if(topic == "humi"){
     if(msg == "on"){
       humidifier.on();}
     if(msg == "off"){
       humidifier.off();  }
   }
-  if(topic == "infob3it/student033/optimal"){
+  if(topic == "optimal"){
     int i, val;
     sscanf(msg.c_str(), "%d %d", &i, &val); 
     optimal[i] = val;

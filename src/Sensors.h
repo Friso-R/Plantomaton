@@ -1,7 +1,6 @@
 #ifndef SENSORS_H
 #define SENSORS_H
 
-#include "Tmp_DHT.h"
 #include "Tmp_DS18B20.h"
 //#include "RGBsensor.h"
 //#include "co2.h"
@@ -11,7 +10,7 @@
 
 class Sensors {
 public:
-  float tmp_DHT;
+  float tmp_air;
   float tmp_soil;
   float humidity;
   float lux;
@@ -28,7 +27,7 @@ public:
   //Sensors() : rgb() {}  // Initialize RGB sensor object
 
   void setup() {
-    humi.setup();
+    
     tmp.setup();
     flux.setup();
     sht.setup();
@@ -38,7 +37,6 @@ public:
 
   void refresh(){
     
-    humi.loop();
     tmp.update();
     flux.update();
     sms.update();
@@ -46,10 +44,11 @@ public:
     //rgb.loop();
     //co2.loop();
   	
-    tmp_DHT      = humi.t;
     tmp_soil	   = tmp.tmp;
-    humidity     = humi.h;
+    tmp_air      = sht.aTemperature;
+    humidity     = sht.aHumidity;
     lux          = flux.lux;
+    
   //vpd          = humi.vpd;
   //waves        = rgb.readings;
   //eCO2         = co2.CO2;
@@ -64,7 +63,6 @@ public:
   }
 
 private:
-  DHT21xxx     humi;
   Tmp_DS18B12  tmp;
   //RGB        rgb;
   Flux         flux;

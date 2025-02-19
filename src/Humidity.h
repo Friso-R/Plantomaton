@@ -13,6 +13,9 @@ static int16_t error;
 class SHT40{
 public: 
 
+float aTemperature;
+float aHumidity;
+
 void setup() {
 
     while (!Serial) {
@@ -38,9 +41,6 @@ void setup() {
 
 void update() {
 
-    float aTemperature = 0.0;
-    float aHumidity = 0.0;
-    delay(20);
     error = sht4x.measureLowestPrecision(aTemperature, aHumidity);
     if (error != NO_ERROR) {
         Serial.print("Error trying to execute measureLowestPrecision(): ");

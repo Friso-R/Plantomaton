@@ -8,7 +8,7 @@
 #include "WiFiSetup.h"
 #include "Broker.h"
 #include "Sensors.h"
-#include "ServoMotor.h"
+//#include "ServoMotor.h"
 
 void regulate();
 void SupplyWater();

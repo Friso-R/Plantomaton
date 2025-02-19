@@ -5,14 +5,27 @@ Broker    broker;
 Sensors   sensors;
 LedGroup  leds;
 
-Fan    sideFans   (14);
-Relay  pomp       (4);
+Fan    sideFans   (27);
+Relay  pomp       (17);
 Relay  heater     (16);
 Switch humidifier (26);
 
 ServoMotor servo  (23);
 
-float optimal[5];
+float optimal[10] = { 
+//val   i actu    factor      
+  80, //0 fan     air tmp     lower
+  80, //1 fan     air tmp     upper
+  80, //2 fan     humidity    lower
+  80, //3 fan     humidity    upper
+  80, //4 pomp    soil moisture
+  18, //5 humi    humidity
+  80, //6 heater  temperature 
+  80, //7 
+  80, //8
+  80  //9
+  };
+
 bool scheduleMode;
 int timeOn, timeOff;
 
@@ -42,9 +55,9 @@ void loop() {
 void regulate(){
   sideFans.set(fanControl());
   sensors.soil_3 > optimal[4] ? pomp.on() : pomp.off(); //3000 tot 1300
-//sensors.waves[10]    < optimal[3] ? lamp.on() : lamp.off();
-  sensors.humidity < optimal[2]  ? humidifier.on() : humidifier.off();
-  sensors.tmp_DHT > optimal[3]  ? heater.on() : heater.off();
+//sensors.waves[10]    < optimal[] ? lamp.on() : lamp.off();
+  sensors.humidity < optimal[5]  ? humidifier.on() : humidifier.off();
+  sensors.tmp_DHT < optimal[6]  ? heater.on() : heater.off();
 
 }
 
@@ -65,7 +78,6 @@ int schedule(String timeStr) {
 int fanControl(){
   float tmp = sensors.tmp_DHT;
   float hum = sensors.humidity;
-
   if (tmp > optimal[1] || hum > optimal[3]) 
     return 255;
   if (tmp > optimal[0] || hum > optimal[2]) 
@@ -88,6 +100,7 @@ void pubSensors(){
   broker.publish("tmp/air"  , String(sensors.tmp_DHT ));
   broker.publish("tmp/soil" , String(sensors.tmp_soil));
   broker.publish("vocht"    , String(sensors.humidity));
+  broker.publish("lux"      , String(sensors.lux     ));
 //broker.publish("vpd"      , String(sensors.vpd     ));
   broker.publish("soil"     , String(sensors.soil_3  ));
   broker.publish("CO2"      , String(sensors.eCO2    ));
@@ -114,7 +127,7 @@ void callback(String topic, byte* message, unsigned int length) {
   if(topic == "infob3it/student033/lamp/2") {msg == "on" ? lamp2.on() : lamp2.off();}
   if(topic == "infob3it/student033/lamp/3") {msg == "on" ? lamp3.on() : lamp3.off();}
 
-  if(topic == "infob3it/student033/sidefans") msg == "on" ? lampFans.on() : lampFans.off();
+  if(topic == "infob3it/student033/sidefans") msg == "on" ? sideFans.set(255) : sideFans.off();
 
   if(topic == "infob3it/student033/schedule/on")   timeOn  = schedule(msg);
   if(topic == "infob3it/student033/schedule/off")  timeOff = schedule(msg);
@@ -139,6 +152,9 @@ void callback(String topic, byte* message, unsigned int length) {
     if(msg == "off"){
       humidifier.off();  }
   }
-  if(topic == "infob3it/student033/optimal")
-    sscanf(msg.c_str(), "%f %f %f %f %f", &optimal[0], &optimal[1], &optimal[2], &optimal[3], &optimal[4]);
+  if(topic == "infob3it/student033/optimal"){
+    int i, val;
+    sscanf(msg.c_str(), "%d %d", &i, &val); 
+    optimal[i] = val;
+  }
 }

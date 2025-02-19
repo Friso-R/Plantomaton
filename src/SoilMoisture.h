@@ -24,10 +24,11 @@ public:
   {
     ADS.setGain(0);
 
-    int16_t v0 = ADS.readADC(0);  
-    int16_t v1 = ADS.readADC(1);  
-    int16_t v2 = ADS.readADC(2);  
-    int16_t v3 = ADS.readADC(3);  
+    v0 = ADS.readADC(0);  
+    v1 = ADS.readADC(1);  
+    v2 = ADS.readADC(2);  
+    v3 = (1 - (ADS.readADC(3)/13100)) * 100;  
+
 
     float f = ADS.toVoltage(1);  //  voltage factor
 
@@ -36,5 +37,7 @@ public:
     Serial.print("\tAnalog2: "); Serial.print(v2); Serial.print('\t'); Serial.println(v2 * f, 3);
     Serial.print("\tAnalog3: "); Serial.print(v3); Serial.print('\t'); Serial.println(v3 * f, 3);
     Serial.println();
+
+
   }
 }; 

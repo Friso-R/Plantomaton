@@ -122,31 +122,23 @@ void callback(String topic, byte* message, unsigned int length) {
   for (int i = 0; i < length; i++)  
     msg += (char)message[i];
     
-  if(topic == "lamp/1") {msg == "on" ? lamp1.on() : lamp1.off();}
-  if(topic == "lamp/2") {msg == "on" ? lamp2.on() : lamp2.off();}
-  if(topic == "lamp/3") {msg == "on" ? lamp3.on() : lamp3.off();}
-
   if(topic == "sidefans") msg == "on" ? sideFans.set(255) : sideFans.off();
 
   if(topic == "schedule/on")   timeOn  = schedule(msg);
   if(topic == "schedule/off")  timeOff = schedule(msg);
 
-  if(topic == "ledGroup/1"){
-    leds.ledGroup[0] = msg.toInt(); }
-  if(topic == "ledGroup/2"){
-    leds.ledGroup[1] = msg.toInt(); }
-  if(topic == "ledGroup/3"){
-    leds.ledGroup[2] = msg.toInt(); }
+  if(topic == "ledGroup/switch") msg == "on" ? ledGroupOn() : ledGroupOff();
+  if(topic == "ledGroup/1"){ leds.ledGroup[0] = msg.toInt(); }
+  if(topic == "ledGroup/2"){ leds.ledGroup[1] = msg.toInt(); }
+  if(topic == "ledGroup/3"){ leds.ledGroup[2] = msg.toInt(); }
 
   if(topic == "pomp"){
     if(msg == "on")  pomp.on();
     if(msg == "off") pomp.off();    
   }
   if(topic == "humi"){
-    if(msg == "on"){
-      humidifier.on();}
-    if(msg == "off"){
-      humidifier.off();  }
+    if(msg == "on")  { humidifier.on();   }
+    if(msg == "off") { humidifier.off();  }
   }
   if(topic == "optimal"){
     int i, val;

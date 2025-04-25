@@ -27,7 +27,7 @@ public:
     v0 = ADS.readADC(0);  
     v1 = ADS.readADC(1);  
     v2 = ADS.readADC(2);  
-    v3 = (1 - (ADS.readADC(3)/13100)) * 100;  
+    v3 = ((13310.0 - ADS.readADC(3)) / 8130.0) * 100.0;     //min=13310, max=5180
 
 
     float f = ADS.toVoltage(1);  //  voltage factor

@@ -6,9 +6,9 @@ Sensors   sensors;
 LedGroup  leds;
 
 Fan    sideFans   (27);
-Relay  pomp       (17);
+Relay  pomp       (15);
 Relay  heater     (16);
-Switch humidifier (26);
+Switch humidifier (19);
 
 float optimal[10] = { 
 //val   i actu    factor      
@@ -127,10 +127,13 @@ void callback(String topic, byte* message, unsigned int length) {
   if(topic == "schedule/on")   timeOn  = schedule(msg);
   if(topic == "schedule/off")  timeOff = schedule(msg);
 
-  if(topic == "ledGroup/switch") msg == "on" ? ledGroupOn() : ledGroupOff();
-  if(topic == "ledGroup/1"){ leds.ledGroup[0] = msg.toInt(); }
-  if(topic == "ledGroup/2"){ leds.ledGroup[1] = msg.toInt(); }
-  if(topic == "ledGroup/3"){ leds.ledGroup[2] = msg.toInt(); }
+  if(topic == "ledGroup/switch") 
+    { msg == "on" ?  leds.ledGroupOn() : leds.ledGroupOff(); }
+
+  if(topic == "ledGroup/1") { leds.ledGroup[0] = msg.toInt(); }
+  if(topic == "ledGroup/2") { leds.ledGroup[1] = msg.toInt(); }
+  if(topic == "ledGroup/3") { leds.ledGroup[2] = msg.toInt(); }
+
 
   if(topic == "pomp"){
     if(msg == "on")  pomp.on();

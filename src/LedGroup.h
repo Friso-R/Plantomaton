@@ -2,9 +2,10 @@
 #define LEDGROUP_H
 
 Relay powerSwitch (2);
-Relay lampFans    (17);
+Relay ledPomp     (17);
+Relay lampFans    (4);
 
-Relay lamp1 (19);
+Relay lamp1 (13);
 Relay lamp2 (18);
 Relay lamp3 (5);
 
@@ -15,6 +16,7 @@ public:
 
     void ledGroupOn(){
     powerSwitch.on();
+    ledPomp.on();
     lampFans.on();
 
     lamp1.set(ledGroup[0]);
@@ -28,6 +30,7 @@ public:
     lamp3.off();
 
     lampFans.off();
+    ledPomp.off();
     powerSwitch.off();
     }
 };

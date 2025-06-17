@@ -5,20 +5,21 @@ Broker    broker;
 Sensors   sensors;
 LedGroup  leds;
 
-Fan    sideFans   (27);
-Relay  pomp       (15);
+Pomp   pomp;
+Fan    sideFans   (12);
 Relay  heater     (16);
+Relay  heaterfan  (18);
 Switch humidifier (19);
 
 float optimal[10] = { 
 //val   i actu    factor      
-  80, //0 fan     air tmp     lower
-  80, //1 fan     air tmp     upper
+  28, //0 fan     air tmp     lower
+  32, //1 fan     air tmp     upper
   80, //2 fan     humidity    lower
-  80, //3 fan     humidity    upper
-  80, //4 pomp    soil moisture
-  18, //5 humi    humidity
-  80, //6 heater  temperature 
+  95, //3 fan     humidity    upper
+  40, //4 pomp    soil moisture
+  40, //5 humi    humidity
+  16, //6 heater  temperature 
   80, //7 
   80, //8
   80  //9
@@ -28,7 +29,6 @@ bool scheduleMode;
 int timeOn, timeOff;
 
 BlockNot  update    (5, SECONDS);
-BlockNot  flowTimer (2, SECONDS);
 
 void setup() {
   Serial.begin(9600);
@@ -41,6 +41,7 @@ void setup() {
 void loop() {
   
   broker.update();
+  pomp.update();
 
   if(update.TRIGGERED){
     sensors.refresh();
@@ -52,11 +53,11 @@ void loop() {
 
 void regulate(){
   sideFans.set(fanControl());
-  sensors.soil_3 > optimal[4] ? pomp.on() : pomp.off(); //3000 tot 1300
+  
 //sensors.waves[10]    < optimal[] ? lamp.on() : lamp.off();
-  sensors.humidity < optimal[5]  ? humidifier.on() : humidifier.off();
+  sensors.humidity < optimal[5]  ? humidifier.off() : humidifier.on();
   sensors.tmp_air < optimal[6]  ? heater.on() : heater.off();
-
+  sensors.tmp_air < optimal[6]  ? heaterfan.on() : heaterfan.off();
 }
 
 void check_schedule(){
@@ -82,16 +83,6 @@ int fanControl(){
     return 160;
 
   return 0;
-}
-
-void SupplyWater(){
-  pomp.on();
-  flowTimer.RESET;
-} 
-
-void BlockWater(){
-  if(flowTimer.FIRST_TRIGGER)
-    pomp.off();
 }
 
 void pubSensors(){
@@ -130,14 +121,15 @@ void callback(String topic, byte* message, unsigned int length) {
   if(topic == "ledGroup/switch") 
     { msg == "on" ?  leds.ledGroupOn() : leds.ledGroupOff(); }
 
+  if(topic == "ledGroup/switch") msg == "on" ? leds.ledGroupOn() : leds.ledGroupOff();
   if(topic == "ledGroup/1") { leds.ledGroup[0] = msg.toInt(); }
-  if(topic == "ledGroup/2") { leds.ledGroup[1] = msg.toInt(); }
-  if(topic == "ledGroup/3") { leds.ledGroup[2] = msg.toInt(); }
-
+  //if(topic == "ledGroup/2") { leds.ledGroup[1] = msg.toInt(); }
+  //if(topic == "ledGroup/3") { leds.ledGroup[2] = msg.toInt(); }
 
   if(topic == "pomp"){
-    if(msg == "on")  pomp.on();
-    if(msg == "off") pomp.off();    
+    if(msg == "on")  pomp.supplyWater();
+    else if(msg == "off") waterpump.off();
+    else flowTimer.setDuration(msg.toInt());  
   }
   if(topic == "humi"){
     if(msg == "on")  { humidifier.on();   }
@@ -148,4 +140,9 @@ void callback(String topic, byte* message, unsigned int length) {
     sscanf(msg.c_str(), "%d %d", &i, &val); 
     optimal[i] = val;
   }
+}
+
+int getThirstLevel(){
+  int soil = sensors.soil_3;
+  return (optimal[4] - soil);
 }

@@ -6,8 +6,8 @@ Relay ledPomp     (17);
 Relay lampFans    (4);
 
 Relay lamp1 (13);
-Relay lamp2 (18);
-Relay lamp3 (5);
+//Relay lamp2 (18);
+//Relay lamp3 (5);
 
 class LedGroup {
 public:
@@ -20,14 +20,14 @@ public:
     lampFans.on();
 
     lamp1.set(ledGroup[0]);
-    lamp2.set(ledGroup[1]);
-    lamp3.set(ledGroup[2]);
+    //lamp2.set(ledGroup[1]);
+    //lamp3.set(ledGroup[2]);
     }
 
     void ledGroupOff(){
     lamp1.off();
-    lamp2.off();
-    lamp3.off();
+    //lamp2.off();
+    //lamp3.off();
 
     lampFans.off();
     ledPomp.off();

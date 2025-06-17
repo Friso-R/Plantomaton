@@ -8,8 +8,12 @@ public:
   int16_t v0;  
   int16_t v1;  
   int16_t v2;  
-  int16_t v3;
+  float v3;
   
+  int min = 5180;
+  int max = 13310;
+  int range = max - min;
+
   void setup() 
   {
     Serial.println(__FILE__);
@@ -22,12 +26,13 @@ public:
 
   void update() 
   {
+    
     ADS.setGain(0);
 
     v0 = ADS.readADC(0);  
     v1 = ADS.readADC(1);  
     v2 = ADS.readADC(2);  
-    v3 = ((13310.0 - ADS.readADC(3)) / 8130.0) * 100.0;     //min=13310, max=5180
+    v3 = (1.0 - (float)(ADS.readADC(3) - min) / range) * 100.0;
 
 
     float f = ADS.toVoltage(1);  //  voltage factor
@@ -37,7 +42,5 @@ public:
     Serial.print("\tAnalog2: "); Serial.print(v2); Serial.print('\t'); Serial.println(v2 * f, 3);
     Serial.print("\tAnalog3: "); Serial.print(v3); Serial.print('\t'); Serial.println(v3 * f, 3);
     Serial.println();
-
-
   }
 }; 

@@ -2,6 +2,7 @@
 #include <BlockNot.h>
 
 #include "Relay.h"
+#include "LedPWM.h"
 #include "Switch.h"
 #include "Fan.h"
 

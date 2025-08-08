@@ -5,9 +5,9 @@ Relay powerSwitch (2);
 Relay ledPomp     (17);
 Relay lampFans    (4);
 
-Relay lamp1 (13);
-//Relay lamp2 (18);
-//Relay lamp3 (5);
+LedPWM lamp1 (13, 0);
+//LedPWM lamp2 (18);
+//LedPWM lamp3 (5);
 
 class LedGroup {
 public:

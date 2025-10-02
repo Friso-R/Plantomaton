@@ -11,7 +11,7 @@
 class Sensors {
 public:
   float tmp_air;
-  float tmp_soil;
+  float tmp_lamp;
   float humidity;
   float lux;
   //float vpd;
@@ -44,7 +44,7 @@ public:
     //rgb.loop();
     //co2.loop();
   	
-    tmp_soil	   = tmp.tmp;
+    tmp_lamp	   = tmp.tmp;
     tmp_air      = sht.aTemperature;
     humidity     = sht.aHumidity;
     lux          = flux.lux;

@@ -15,7 +15,7 @@ public:
   }
 
   void CheckSoilMoisture(){
-  int thirst = getThirstLevel();
+  int thirst = getThirstiness();
   if(thirst > 20){ 
     set_milliLiters(thirst*10);
     supplyWater();

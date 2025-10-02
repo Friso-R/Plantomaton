@@ -8,7 +8,7 @@ class LedPWM{
 
 public:
 
-  LedPWM(int pin, int channel, int freq = 5000, int resolution = 8){
+  LedPWM(int pin, int channel, int freq = 10000, int resolution = 8){
     LED_PIN = pin;
     LED_CHANNEL = channel;
     ledcSetup(channel, freq, resolution);

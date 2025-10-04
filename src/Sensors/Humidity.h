@@ -1,5 +1,4 @@
-#ifndef HUMIDITY_H
-#define HUMIDITY_H
+#pragma once
 
 #include <SensirionI2cSht4x.h>
 
@@ -56,5 +55,3 @@ void update() {
     Serial.println();
 }
 };
-
-#endif

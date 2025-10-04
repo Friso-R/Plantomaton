@@ -1,5 +1,4 @@
-#ifndef RGB_SENSOR_H
-#define RGB_SENSOR_H
+#pragma once
 
 #include <Adafruit_AS7341.h>
 
@@ -51,5 +50,3 @@ public:
     
   }
 };
-
-#endif // RGB_SENSOR_H

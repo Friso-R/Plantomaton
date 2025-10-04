@@ -1,5 +1,4 @@
-#ifndef DHTx_H
-#define DHTx_H
+#pragma once
 
 #include "DHT.h"
 
@@ -41,5 +40,3 @@ public:
     Serial.println("");
   }
 };
-
-#endif

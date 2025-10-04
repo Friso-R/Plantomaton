@@ -1,5 +1,4 @@
-#ifndef LEDPWM_H
-#define LEDPWM_H
+#pragma once
 
 class LedPWM{
 
@@ -20,8 +19,6 @@ public:
   void set(int pwm) { ledcWrite(LED_CHANNEL,  pwm); Serial.println("LED " + String(LED_PIN) + " ON!" ); }
   void off()        { ledcWrite(LED_CHANNEL,  0);   Serial.println("LED " + String(LED_PIN) + " OFF!"); }
 };
-
-#endif
 
 
 

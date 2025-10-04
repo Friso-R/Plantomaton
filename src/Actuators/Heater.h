@@ -1,15 +1,16 @@
-#ifndef HEATER_H
-#define HEATER_H
+#pragma once
 
-Relay  heater     (16);
-Relay  heaterfan  (18);
+Relay  heat;
+Relay  heaterfan;
 
 class Heater{
 
 public:
+  Heater(int heater_pin, int fan_pin){
+    heat.setup(heater_pin);
+    heaterfan.setup(fan_pin);
+  }
 
-  void on()  { heater.on (); heaterfan.on (); }
-  void off() { heater.off(); heaterfan.off(); }
+  void on()  { heat.on (); heaterfan.on (); }
+  void off() { heat.off(); heaterfan.off(); }
 };
-
-#endif

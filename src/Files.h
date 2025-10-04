@@ -1,19 +1,13 @@
+#pragma once
 #include <Arduino.h>
 #include <BlockNot.h>
 
-#include "Relay.h"
-#include "LedPWM.h"
-#include "Switch.h"
-#include "Fan.h"
-
 int getThirstLevel();
 
-#include "Pomp.h"
-#include "LedGroup.h"
 #include "WiFiSetup.h"
 #include "Broker.h"
-#include "Sensors.h"
-//#include "ServoMotor.h"
+#include "Sensors/Sensors.h"
+#include "Actuators/Actuator_headers.h"
 
 void regulate();
 void pubSensors();

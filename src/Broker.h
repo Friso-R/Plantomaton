@@ -1,5 +1,4 @@
-#ifndef broker_h
-#define broker_h
+#pragma once
 
 #include <PubSubClient.h>
 
@@ -52,5 +51,3 @@ public:
     client.publish(topic.c_str(),   message.c_str());
   }
 };
-
-#endif

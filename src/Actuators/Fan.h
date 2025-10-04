@@ -1,25 +1,33 @@
-#ifndef FAN_H
-#define FAN_H
+#pragma once
 
-class Fan{
+Switch power;
+Switch boost;
 
-  int POWER_PIN;
-  int LEVEL_PIN;
+class Fan{ 
+
 
 public:
-
+  
   Fan(int power_pin, int level_pin){
-    POWER_PIN = power_pin;
-    LEVEL_PIN = level_pin;
-
-    pinMode(POWER_PIN, OUTPUT);
-    pinMode(LEVEL_PIN, OUTPUT);
+    power.setup(power_pin);
+    boost.setup(level_pin);
+    
   }
 
-  void on ()            { digitalWrite(POWER_PIN, HIGH);       Serial.println("Fan on "); }
-  void off()            { digitalWrite(POWER_PIN, LOW );       Serial.println("Fan off"); }
-  void level(int level) { digitalWrite(LEVEL_PIN,  level - 1); Serial.println("Fan level:" + String(level)); on();}
-
+  // Set fan speed level: 0 = off, 1 = low, 2 = high
+  void rotation_speed(int level) { 
+    switch (level){
+    case 0:
+      power.off();
+      break;
+    case 1:
+      power.on();
+      boost.off();
+      break;
+    case 2:
+      power.on();
+      boost.on();
+      break;
+    }
+  }
 };
-
-#endif

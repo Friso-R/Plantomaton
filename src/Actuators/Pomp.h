@@ -1,5 +1,4 @@
-#ifndef POMP_H
-#define POMP_H
+#pragma once
 
 BlockNot flowTimer (2000);
 BlockNot soilCheck (1000* 60* 3); //(8*3600 , SECONDS);
@@ -15,7 +14,7 @@ public:
   }
 
   void CheckSoilMoisture(){
-  int thirst = getThirstiness();
+  int thirst = getThirstLevel();
   if(thirst > 20){ 
     set_milliLiters(thirst*10);
     supplyWater();
@@ -36,5 +35,3 @@ void blockWater(){
     waterpump.off();
   }
 };
-
-#endif

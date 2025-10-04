@@ -1,5 +1,4 @@
-#ifndef SETUP_WIFI_H
-#define SETUP_WIFI_H
+#pragma once
 
 #include <WiFi.h>
 #include "time.h"
@@ -44,5 +43,3 @@ int nowTimeMin()
   return timeinfo.tm_hour * 60 + timeinfo.tm_min;
 }
 };
-
-#endif

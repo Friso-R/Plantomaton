@@ -1,5 +1,4 @@
-#ifndef TMP_DS18B12_H
-#define TMP_DS18B12_H
+#pragma once
 
 #include "DS18B20.h"
 
@@ -33,5 +32,3 @@ public:
   }
 
 };
-
-#endif

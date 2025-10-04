@@ -1,5 +1,4 @@
-#ifndef FLUX_H
-#define FLUX_H
+#pragma once
 
 /*
 
@@ -72,5 +71,3 @@ float lux;
     }
   }
 };
-
-#endif

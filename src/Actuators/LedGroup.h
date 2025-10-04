@@ -1,5 +1,4 @@
-#ifndef LEDGROUP_H
-#define LEDGROUP_H
+#pragma once
 
 Relay powerSwitch (2);
 Relay ledPomp     (17);
@@ -34,5 +33,3 @@ public:
     powerSwitch.off();
     }
 };
-
-#endif

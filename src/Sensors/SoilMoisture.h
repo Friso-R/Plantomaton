@@ -1,3 +1,4 @@
+#pragma once
 #include "ADS1X15.h"
 
 ADS1115 ADS(0x48);
@@ -43,4 +44,4 @@ public:
     Serial.print("\tAnalog3: "); Serial.print(v3); Serial.print('\t'); Serial.println(v3 * f, 3);
     Serial.println();
   }
-}; 
+};

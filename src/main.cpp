@@ -6,9 +6,8 @@ Sensors   sensors;
 LedGroup  leds;
 
 Pomp   pomp;
-Fan    sideFans   (12);
-Relay  heater     (16);
-Relay  heaterfan  (18);
+Fan    sideFans   (12, -1);
+Heater heater     (16, 18);
 Switch humidifier (19);
 
 float optimal[10] = { 
@@ -39,7 +38,6 @@ void setup() {
 }
 
 void loop() {
-  
   broker.update();
   pomp.update();
 
@@ -52,12 +50,12 @@ void loop() {
 }
 
 void regulate(){
-  sideFans.set(fanControl());
+  sideFans.rotation_speed(fanControl());
   
 //sensors.waves[10]    < optimal[] ? lamp.on() : lamp.off();
-  sensors.humidity < optimal[5]  ? humidifier.off() : humidifier.on();
-  sensors.tmp_air < optimal[6]  ? heater.on() : heater.off();
-  sensors.tmp_air < optimal[6]  ? heaterfan.on() : heaterfan.off();
+  sensors.humidity < optimal[5] ? humidifier.off() : humidifier.on();
+  sensors.tmp_air  < optimal[6] ? heater.on()      : heater.off();
+  sensors.tmp_air  < optimal[6] ? heaterfan.on()   : heaterfan.off();
 }
 
 void check_schedule(){
@@ -77,17 +75,18 @@ int schedule(String timeStr) {
 int fanControl(){
   float tmp = sensors.tmp_air;
   float hum = sensors.humidity;
-  if (tmp > optimal[1] || hum > optimal[3]) 
-    return 255;
-  if (tmp > optimal[0] || hum > optimal[2]) 
-    return 160;
 
-  return 0;
+  if (tmp < optimal[0] || hum < optimal[2]) 
+    return 0;
+  if (tmp < optimal[1] || hum < optimal[3]) 
+    return 1;
+  else 
+    return 2;
 }
 
 void pubSensors(){
   broker.publish("tmp/air"  , String(sensors.tmp_air ));
-  broker.publish("tmp/soil" , String(sensors.tmp_soil));
+  broker.publish("tmp/soil" , String(sensors.tmp_lamp));
   broker.publish("vocht"    , String(sensors.humidity));
   broker.publish("lux"      , String(sensors.lux     ));
 //broker.publish("vpd"      , String(sensors.vpd     ));
@@ -113,7 +112,7 @@ void callback(String topic, byte* message, unsigned int length) {
   for (int i = 0; i < length; i++)  
     msg += (char)message[i];
     
-  if(topic == "sidefans") msg == "on" ? sideFans.set(255) : sideFans.off();
+  if(topic == "sidefans") sideFans.rotation_speed(msg.toInt());
 
   if(topic == "schedule/on")   timeOn  = schedule(msg);
   if(topic == "schedule/off")  timeOff = schedule(msg);

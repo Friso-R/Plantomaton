@@ -1,5 +1,4 @@
-#ifndef SENSORS_H
-#define SENSORS_H
+#pragma once
 
 #include "Tmp_DS18B20.h"
 //#include "RGBsensor.h"
@@ -74,6 +73,3 @@ private:
   { waves = readings; }
   
 };
-
-
-#endif // SENSORS_H

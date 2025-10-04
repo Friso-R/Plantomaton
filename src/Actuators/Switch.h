@@ -1,5 +1,4 @@
-#ifndef SWITCH_H
-#define SWITCH_H
+#pragma once
 
 class Switch{
 
@@ -7,7 +6,11 @@ class Switch{
 
 public:
 
-  Switch(int pin){
+  Switch(int pin = -1){
+    setup(pin);
+  }
+
+  void setup(int pin){
     SWITCH_PIN = pin;
     pinMode(pin, OUTPUT);
   }
@@ -15,8 +18,6 @@ public:
   void on() { digitalWrite(SWITCH_PIN, HIGH); Serial.println("Switch " + String(SWITCH_PIN) + " ON!"); }
   void off(){ digitalWrite(SWITCH_PIN, LOW);  Serial.println("Switch " + String(SWITCH_PIN) + " OFF!");}
 };
-
-#endif
 
 
 

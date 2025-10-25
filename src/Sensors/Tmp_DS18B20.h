@@ -20,6 +20,11 @@ public:
 
   void update()
   {
+    if(!sensor.isConnected()) {
+      Serial.println("DS18B20 not connected!");
+      return;
+    }
+    
     sensor.requestTemperatures();
 
     //  wait until sensor is ready

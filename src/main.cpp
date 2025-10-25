@@ -6,9 +6,9 @@ Sensors   sensors;
 LedGroup  leds;
 
 Pomp   pomp;
-Fan    sideFans   (12, -1);
-Heater heater     (16, 18);
-Switch humidifier (19);
+Fan    sideFans   (16, 17);
+Heater heater     (-1, -1);
+Switch humidifier (-1);
 
 float optimal[10] = { 
 //val   i actu    factor      

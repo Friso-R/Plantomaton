@@ -1,8 +1,8 @@
 #pragma once
 
-Relay powerSwitch (2);
-Relay ledPomp     (17);
-Relay lampFans    (4);
+Relay powerSwitch (32);
+Relay ledPomp     (19);
+Relay lampFans    (5);
 
 LedPWM lamp1 (13, 0);
 //LedPWM lamp2 (18);
@@ -14,7 +14,7 @@ public:
     int ledGroup[3];
 
     void ledGroupOn(){
-    powerSwitch.on();
+    powerSwitch.off();
     ledPomp.on();
     lampFans.on();
 
@@ -30,6 +30,6 @@ public:
 
     lampFans.off();
     ledPomp.off();
-    powerSwitch.off();
+    powerSwitch.on();
     }
 };

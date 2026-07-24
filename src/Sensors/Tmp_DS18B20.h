@@ -16,6 +16,10 @@ public:
   {
     sensor.begin();
     sensor.setResolution(11);
+
+    if(sensor.isConnected()) {
+      sensor.requestTemperatures();  
+    }
   }
 
   void update()
@@ -25,15 +29,19 @@ public:
       return;
     }
     
-    sensor.requestTemperatures();
+    
 
     //  wait until sensor is ready
-    while (!sensor.isConversionComplete())  
-    {   delay(1);  }
+    if (sensor.isConversionComplete())  
+    {
 
     tmp = sensor.getTempC();
     Serial.print("Temp: ");
     Serial.println(tmp);
+    }
+
+    sensor.requestTemperatures();
+
   }
 
 };

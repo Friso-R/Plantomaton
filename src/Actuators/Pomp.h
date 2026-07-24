@@ -2,7 +2,7 @@
 
 BlockNot flowTimer (2000);
 BlockNot soilCheck (1000* 60* 3); //(8*3600 , SECONDS);
-Relay    waterpump (5);
+Relay    waterpump (18);
 
 
 class Pomp{

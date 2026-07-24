@@ -27,7 +27,8 @@ float optimal[10] = {
 bool scheduleMode;
 int timeOn, timeOff;
 
-BlockNot  update    (5, SECONDS);
+BlockNot  update        (5, SECONDS);
+BlockNot  manualupdate  (1, SECONDS);
 
 void setup() {
   Serial.begin(9600);
@@ -47,12 +48,17 @@ void loop() {
     regulate();
     check_schedule();
   }
+
+  if(manualupdate.TRIGGERED){
+    
+  }
+
 }
 
 void regulate(){
   sideFans.rotation_speed(fanControl());
   
-//sensors.waves[10]    < optimal[] ? lamp.on() : lamp.off();
+
   sensors.humidity < optimal[5] ? humidifier.off() : humidifier.on();
   sensors.tmp_air  < optimal[6] ? heater.on()      : heater.off();
   sensors.tmp_air  < optimal[6] ? heaterfan.on()   : heaterfan.off();
@@ -92,16 +98,7 @@ void pubSensors(){
 //broker.publish("vpd"      , String(sensors.vpd     ));
   broker.publish("soil"     , String(sensors.soil_3  ));
 //broker.publish("CO2"      , String(sensors.eCO2    ));
-/*
-  broker.publish("F1", String(sensors.waves[0]));
-  broker.publish("F2", String(sensors.waves[1]));
-  broker.publish("F3", String(sensors.waves[2]));
-  broker.publish("F4", String(sensors.waves[3]));
-  broker.publish("F5", String(sensors.waves[6]));
-  broker.publish("F6", String(sensors.waves[7]));
-  broker.publish("F7", String(sensors.waves[8]));
-  broker.publish("F8", String(sensors.waves[9]));
-  */
+
 }
 
 // This function is executed when some device publishes a message to a topic that the ESP32 is subscribed to
@@ -117,10 +114,8 @@ void callback(String topic, byte* message, unsigned int length) {
   if(topic == "schedule/on")   timeOn  = schedule(msg);
   if(topic == "schedule/off")  timeOff = schedule(msg);
 
-  if(topic == "ledGroup/switch") 
-    { msg == "on" ?  leds.ledGroupOn() : leds.ledGroupOff(); }
+  if(topic == "ledGroup/switch") { msg == "on" ?  leds.ledGroupOn() : leds.ledGroupOff(); }
 
-  if(topic == "ledGroup/switch") msg == "on" ? leds.ledGroupOn() : leds.ledGroupOff();
   if(topic == "ledGroup/1") { leds.ledGroup[0] = msg.toInt(); }
   //if(topic == "ledGroup/2") { leds.ledGroup[1] = msg.toInt(); }
   //if(topic == "ledGroup/3") { leds.ledGroup[2] = msg.toInt(); }

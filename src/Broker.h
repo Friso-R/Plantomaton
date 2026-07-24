@@ -10,10 +10,9 @@ extern void callback(String topic, byte* message, unsigned int length);
 class Broker
 {
 private:
-  const char* MQTT_username = "leendertr"; 
+  const char* MQTT_username = "Kasclient"; 
   const char* MQTT_password = "Halt2001"; 
-  const char* MQTT_server   = "server-cam.duckdns.org";
-   //const char* MQTT_server   = "192.168.1.220";
+  const char* MQTT_server   = "192.168.1.150";
 
   void subscriptions(){
     client.subscribe("kas/#");
@@ -23,11 +22,17 @@ private:
     while (!client.connected()) {
       Serial.print("Attempting MQTT connection...");
 
-      client.connect("ESP32KasClient", MQTT_username, MQTT_password);
-      delay(2000);
-      subscriptions();
+    if (client.connect("ESP32KasClient", MQTT_username, MQTT_password)) {
+        Serial.println("connected");
+        subscriptions(); 
+    } else {
+        Serial.print("failed, rc=");
+        Serial.print(client.state()); // Print de reden waarom het mislukte
+        Serial.println(" - trying again in 5 seconds");
+        delay(5000);
+      }
     }
-    Serial.println("connected"); 
+    
   }
 
 public: 
@@ -42,9 +47,12 @@ public:
   void publish(String topic, String message) {
 
     if (!client.connected()) {
+     if (WiFi.status() != WL_CONNECTED) {
       WiFi.reconnect();
-      connect();
     }
+
+  connect();
+}
       
     
     topic = "kas/" + topic;

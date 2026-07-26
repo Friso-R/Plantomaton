@@ -1,6 +1,7 @@
 #pragma once
 
 #include <PubSubClient.h>
+#include <BlockNot.h> // Toegevoegd voor de timer
 
 WiFiClient    espClient;
 PubSubClient  client(espClient);
@@ -13,49 +14,52 @@ private:
   const char* MQTT_username = "Kasclient"; 
   const char* MQTT_password = "Halt2001"; 
   const char* MQTT_server   = "192.168.1.150";
+  
+  // Timer: Probeer elke 10 seconden opnieuw te verbinden met MQTT
+  BlockNot mqttReconnectTimer = BlockNot(10, SECONDS); 
 
   void subscriptions(){
     client.subscribe("kas/#");
-  }
-
-  void connect() {
-    while (!client.connected()) {
-      Serial.print("Attempting MQTT connection...");
-
-    if (client.connect("ESP32KasClient", MQTT_username, MQTT_password)) {
-        Serial.println("connected");
-        subscriptions(); 
-    } else {
-        Serial.print("failed, rc=");
-        Serial.print(client.state()); // Print de reden waarom het mislukte
-        Serial.println(" - trying again in 5 seconds");
-        delay(5000);
-      }
-    }
-    
   }
 
 public: 
   void begin(){
     client.setCallback(callback); 
     client.setServer(MQTT_server, 1883);
-    connect();
+    // Let op: we blokkeren hier niet meer bij het opstarten!
   }
 
-  void update(){ client.loop(); }
+  void update(){ 
+    if (client.connected()) {
+      client.loop(); 
+    }
+  }
+
+  // NIEUW: Deze functie controleert op de achtergrond de status
+  void handleConnection() {
+    // Alleen proberen als WiFi werkt, en MQTT niet verbonden is
+    if (WiFi.status() == WL_CONNECTED && !client.connected()) {
+      
+      // Probeer het maximaal 1x per 10 seconden
+      if (mqttReconnectTimer.TRIGGERED) {
+        Serial.print("Attempting MQTT connection...");
+        
+        if (client.connect("ESP32KasClient", MQTT_username, MQTT_password)) {
+          Serial.println("connected");
+          subscriptions();
+        } else {
+          Serial.print("failed, rc=");
+          Serial.println(client.state()); // Print foutcode en ga direct door
+        }
+      }
+    }
+  }
 
   void publish(String topic, String message) {
-
-    if (!client.connected()) {
-     if (WiFi.status() != WL_CONNECTED) {
-      WiFi.reconnect();
+    // Alleen publiceren als we online zijn, geen delays of reconnects forceren!
+    if (client.connected()) {
+      topic = "kas/" + topic;
+      client.publish(topic.c_str(), message.c_str());
     }
-
-  connect();
-}
-      
-    
-    topic = "kas/" + topic;
-    client.publish(topic.c_str(),   message.c_str());
   }
 };

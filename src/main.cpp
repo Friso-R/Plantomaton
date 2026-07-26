@@ -24,29 +24,42 @@ float optimal[10] = {
   80  //9
   };
 
+// Standaardwaarden, bijvoorbeeld 08:00 (480 min) tot 20:00 (1200 min)
+int timeOn  = 8 * 60;  
+int timeOff = 20 * 60;
+bool isLampScheduledOn = false; // Houdt bij wat de huidige status is
+
+
 bool scheduleMode;
-int timeOn, timeOff;
+
 
 BlockNot  update        (5, SECONDS);
 BlockNot  manualupdate  (1, SECONDS);
 
 void setup() {
   Serial.begin(9600);
-  wifi.connect();
+  wifi.setup();
   broker.begin(); 
   sensors.setup();
   broker.publish("status/kas", "online");
 }
 
 void loop() {
+  wifi.handleTime();
+  broker.handleConnection(); 
   broker.update();
+
   pomp.update();
 
   if(update.TRIGGERED){
     sensors.refresh();
-    pubSensors();
     regulate();
     check_schedule();
+
+    if (client.connected()) {
+      pubSensors();
+    }
+
   }
 
   if(manualupdate.TRIGGERED){
@@ -66,8 +79,33 @@ void regulate(){
 
 void check_schedule(){
   int now = wifi.nowTimeMin();
-  if (now == timeOn)  leds.ledGroupOn ();
-  if (now == timeOff) leds.ledGroupOff();
+
+  if (now < 0) return;
+
+  bool shouldBeOn = false;
+
+  if (timeOn < timeOff) {
+    // Normaal schema overdag (bijv. 08:00 tot 20:00)
+    if (now >= timeOn && now < timeOff) {
+      shouldBeOn = true;
+    }
+  } else if (timeOn > timeOff) {
+    // Nachtschema dat over middernacht gaat (bijv. 22:00 tot 06:00)
+    if (now >= timeOn || now < timeOff) {
+      shouldBeOn = true;
+    }
+  }
+
+
+  if (shouldBeOn && !isLampScheduledOn) {
+    leds.ledGroupOn();
+    isLampScheduledOn = true;
+    Serial.println("Tijdschema geactiveerd: Lampen AAN");
+  } else if (!shouldBeOn && isLampScheduledOn) {
+    leds.ledGroupOff();
+    isLampScheduledOn = false;
+    Serial.println("Tijdschema gepauzeerd: Lampen UIT");
+  }
 }
 
 int schedule(String timeStr) {
@@ -96,7 +134,7 @@ void pubSensors(){
   broker.publish("vocht"    , String(sensors.humidity));
   broker.publish("lux"      , String(sensors.lux     ));
 //broker.publish("vpd"      , String(sensors.vpd     ));
-  broker.publish("soil"     , String(sensors.soil_3  ));
+  broker.publish("soil"     , String(sensors.soil_1  ));
 //broker.publish("CO2"      , String(sensors.eCO2    ));
 
 }
@@ -137,6 +175,6 @@ void callback(String topic, byte* message, unsigned int length) {
 }
 
 int getThirstLevel(){
-  int soil = sensors.soil_3;
+  int soil = sensors.soil_1;
   return (optimal[4] - soil);
 }

@@ -24,20 +24,30 @@ float optimal[10] = {
   80  //9
   };
 
-// Standaardwaarden, bijvoorbeeld 08:00 (480 min) tot 20:00 (1200 min)
+// Standaardwaarden: 08:00 (480 min) tot 20:00 (1200 min)
 int timeOn  = 8 * 60;  
 int timeOff = 20 * 60;
-bool isLampScheduledOn = false; // Houdt bij wat de huidige status is
-
+bool isLampScheduledOn = false;
 
 bool scheduleMode;
-
 
 BlockNot  update        (5, SECONDS);
 BlockNot  manualupdate  (1, SECONDS);
 
+// FIX UIT KIEMKAS: Debug-functie om actuele instellingen in te zien
+void printOptimalValues() {
+  Serial.println("Current optimal values:");
+  for (int i = 0; i < 10; i++) {
+    Serial.print("optimal[");
+    Serial.print(i);
+    Serial.print("] = ");
+    Serial.println(optimal[i]);
+  }
+}
+
 void setup() {
-  Serial.begin(9600);
+  // FIX UIT KIEMKAS: Baudrate verhoogd van 9600 naar 115200 om CPU-blocking te voorkomen
+  Serial.begin(115200);
   wifi.setup();
   broker.begin(); 
   sensors.setup();
@@ -59,18 +69,15 @@ void loop() {
     if (client.connected()) {
       pubSensors();
     }
-
   }
 
   if(manualupdate.TRIGGERED){
     
   }
-
 }
 
 void regulate(){
   sideFans.rotation_speed(fanControl());
-  
 
   sensors.humidity < optimal[5] ? humidifier.off() : humidifier.on();
   sensors.tmp_air  < optimal[6] ? heater.on()      : heater.off();
@@ -85,17 +92,14 @@ void check_schedule(){
   bool shouldBeOn = false;
 
   if (timeOn < timeOff) {
-    // Normaal schema overdag (bijv. 08:00 tot 20:00)
     if (now >= timeOn && now < timeOff) {
       shouldBeOn = true;
     }
   } else if (timeOn > timeOff) {
-    // Nachtschema dat over middernacht gaat (bijv. 22:00 tot 06:00)
     if (now >= timeOn || now < timeOff) {
       shouldBeOn = true;
     }
   }
-
 
   if (shouldBeOn && !isLampScheduledOn) {
     leds.ledGroupOn();
@@ -133,19 +137,17 @@ void pubSensors(){
   broker.publish("tmp/soil" , String(sensors.tmp_lamp));
   broker.publish("vocht"    , String(sensors.humidity));
   broker.publish("lux"      , String(sensors.lux     ));
-//broker.publish("vpd"      , String(sensors.vpd     ));
   broker.publish("soil"     , String(sensors.soil_1  ));
-//broker.publish("CO2"      , String(sensors.eCO2    ));
-
 }
 
-// This function is executed when some device publishes a message to a topic that the ESP32 is subscribed to
 void callback(String topic, byte* message, unsigned int length) {
   topic = topic.substring(4);
-  String msg;
-
-  for (int i = 0; i < length; i++)  
-    msg += (char)message[i];
+  
+  // FIX UIT KIEMKAS: Stack-buffer met memcpy voorkomt heap-fragmentatie
+  char msgBuffer[length + 1];
+  memcpy(msgBuffer, message, length);
+  msgBuffer[length] = '\0';
+  String msg = String(msgBuffer);
     
   if(topic == "sidefans") sideFans.rotation_speed(msg.toInt());
 
@@ -155,8 +157,6 @@ void callback(String topic, byte* message, unsigned int length) {
   if(topic == "ledGroup/switch") { msg == "on" ?  leds.ledGroupOn() : leds.ledGroupOff(); }
 
   if(topic == "ledGroup/1") { leds.ledGroup[0] = msg.toInt(); }
-  //if(topic == "ledGroup/2") { leds.ledGroup[1] = msg.toInt(); }
-  //if(topic == "ledGroup/3") { leds.ledGroup[2] = msg.toInt(); }
 
   if(topic == "pomp"){
     if(msg == "on")  pomp.supplyWater();
@@ -171,6 +171,7 @@ void callback(String topic, byte* message, unsigned int length) {
     int i, val;
     sscanf(msg.c_str(), "%d %d", &i, &val); 
     optimal[i] = val;
+    printOptimalValues();
   }
 }
 

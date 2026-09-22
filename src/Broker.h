@@ -35,11 +35,17 @@ public:
     }
   }
 
-  // NIEUW: Deze functie controleert op de achtergrond de status
   void handleConnection() {
+    // FIX: Actively force a WiFi reconnect if the router drops the DHCP lease
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.println("WiFi dropped. Forcing reconnect...");
+      WiFi.disconnect();
+      WiFi.reconnect();
+      return; // Stop here and wait for WiFi to recover
+    }
+
     // Alleen proberen als WiFi werkt, en MQTT niet verbonden is
-    if (WiFi.status() == WL_CONNECTED && !client.connected()) {
-      
+    if (!client.connected()) {
       // Probeer het maximaal 1x per 10 seconden
       if (mqttReconnectTimer.TRIGGERED) {
         Serial.print("Attempting MQTT connection...");
@@ -55,11 +61,12 @@ public:
     }
   }
 
-  void publish(String topic, String message) {
-    // Alleen publiceren als we online zijn, geen delays of reconnects forceren!
+  void publish(const char* topic, String message) {
+    // Gebruik een statische buffer in plaats van String concatenatie
     if (client.connected()) {
-      topic = "kas/" + topic;
-      client.publish(topic.c_str(), message.c_str());
+      char fullTopic[64];
+      snprintf(fullTopic, sizeof(fullTopic), "kas/%s", topic);
+      client.publish(fullTopic, message.c_str());
     }
   }
 };

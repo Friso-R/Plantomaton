@@ -1,9 +1,10 @@
 #pragma once
+#include "Relay.h"
 
-Relay  heat;
-Relay  heaterfan;
-
-class Heater{
+class Heater {
+private:
+  Relay heat;
+  Relay heaterfan;
 
 public:
   Heater(int heater_pin, int fan_pin = -1){

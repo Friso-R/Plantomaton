@@ -2,9 +2,8 @@
 
 #include "DS18B20.h"
 
-#define ONE_WIRE_BUS 33
 
-OneWire oneWire(ONE_WIRE_BUS);
+OneWire oneWire(PIN_ONE_WIRE_BUS);
 DS18B20 sensor(&oneWire);
 
 class Tmp_DS18B12{

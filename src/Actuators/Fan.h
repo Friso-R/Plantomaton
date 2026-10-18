@@ -1,22 +1,22 @@
 #pragma once
+#include "Relay.h"
 
-Relay power;
-Relay boost;
-
-class Fan{ 
+class Fan { 
+private:
+  Relay power;
+  Relay boost;
 
 public:
-  
   Fan(int power_pin, int level_pin){
     power.setup(power_pin);
     boost.setup(level_pin);
   }
 
-  // Set fan speed level: 0 = off, 1 = low, 2 = high
   void rotation_speed(int level) { 
     switch (level){
     case 0:
       power.off();
+      boost.off();
       break;
     case 1:
       power.on();

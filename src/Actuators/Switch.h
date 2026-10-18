@@ -6,20 +6,17 @@ class Switch{
 
 public:
 
-  Switch(int pin = -1){
-    setup(pin);
-  }
+Switch(int pin = NO_PIN){ setup(pin); }
 
   void setup(int pin){
     SWITCH_PIN = pin;
-    pinMode(pin, OUTPUT);
+    if (SWITCH_PIN != NO_PIN) { pinMode(SWITCH_PIN, OUTPUT); }
   }
 
-  void on() { digitalWrite(SWITCH_PIN, HIGH); Serial.println("Switch " + String(SWITCH_PIN) + " ON!"); }
-  void off(){ digitalWrite(SWITCH_PIN, LOW);  Serial.println("Switch " + String(SWITCH_PIN) + " OFF!");}
+  void on() { 
+    if (SWITCH_PIN != NO_PIN) { digitalWrite(SWITCH_PIN, HIGH); Serial.println("Switch " + String(SWITCH_PIN) + " ON!"); }
+  }
+  void off() { 
+    if (SWITCH_PIN != NO_PIN) { digitalWrite(SWITCH_PIN, LOW);  Serial.println("Switch " + String(SWITCH_PIN) + " OFF!"); }
+  }
 };
-
-
-
-
-

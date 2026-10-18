@@ -6,9 +6,9 @@ Sensors   sensors;
 LedGroup  leds;
 
 Pomp   pomp;
-Fan    sideFans   (16, 17);
-Heater heater     (-1, -1);
-Switch humidifier (-1);
+Fan    sideFans   (PIN_FAN_POWER, PIN_FAN_BOOST);
+Heater heater     (PIN_HEATER, PIN_HEATER_FAN);
+Switch humidifier (PIN_HUMIDIFIER);
 
 float optimal[10] = { 
 //val   i actu    factor      
@@ -79,9 +79,9 @@ void loop() {
 void regulate(){
   sideFans.rotation_speed(fanControl());
 
-  sensors.humidity < optimal[5] ? humidifier.off() : humidifier.on();
-  sensors.tmp_air  < optimal[6] ? heater.on()      : heater.off();
-  sensors.tmp_air  < optimal[6] ? heaterfan.on()   : heaterfan.off();
+  sensors.humidity < optimal[5] ? humidifier.on() : humidifier.off();
+  
+  sensors.tmp_air  < optimal[6] ? heater.on() : heater.off();
 }
 
 void check_schedule(){
@@ -133,11 +133,22 @@ int fanControl(){
 }
 
 void pubSensors(){
-  broker.publish("tmp/air"  , String(sensors.tmp_air ));
-  broker.publish("tmp/soil" , String(sensors.tmp_lamp));
-  broker.publish("vocht"    , String(sensors.humidity));
-  broker.publish("lux"      , String(sensors.lux     ));
-  broker.publish("soil"     , String(sensors.soil_1  ));
+  char msgBuffer[16]; 
+
+  snprintf(msgBuffer, sizeof(msgBuffer), "%.2f", sensors.tmp_air);
+  broker.publish("tmp/air", msgBuffer);
+
+  snprintf(msgBuffer, sizeof(msgBuffer), "%.2f", sensors.tmp_lamp);
+  broker.publish("tmp/soil", msgBuffer);
+
+  snprintf(msgBuffer, sizeof(msgBuffer), "%.2f", sensors.humidity);
+  broker.publish("vocht", msgBuffer);
+
+  snprintf(msgBuffer, sizeof(msgBuffer), "%.2f", sensors.lux);
+  broker.publish("lux", msgBuffer);
+
+  snprintf(msgBuffer, sizeof(msgBuffer), "%d", sensors.soil_1);
+  broker.publish("soil", msgBuffer);
 }
 
 void callback(String topic, byte* message, unsigned int length) {
@@ -158,20 +169,24 @@ void callback(String topic, byte* message, unsigned int length) {
 
   if(topic == "ledGroup/1") { leds.ledGroup[0] = msg.toInt(); }
 
-  if(topic == "pomp"){
+if(topic == "pomp"){
     if(msg == "on")  pomp.supplyWater();
-    else if(msg == "off") waterpump.off();
-    else flowTimer.setDuration(msg.toInt());  
+    else if(msg == "off") pomp.turnOff();                
+    else pomp.setDuration(msg.toInt());                   
   }
   if(topic == "humi"){
     if(msg == "on")  { humidifier.on();   }
     if(msg == "off") { humidifier.off();  }
   }
-  if(topic == "optimal"){
-    int i, val;
-    sscanf(msg.c_str(), "%d %d", &i, &val); 
-    optimal[i] = val;
-    printOptimalValues();
+  
+if(topic == "optimal"){
+    int i; 
+    float val;
+    sscanf(msg.c_str(), "%d %f", &i, &val); 
+    if (i >= 0 && i < 10) {  // <-- Safety Check
+      optimal[i] = val;
+      printOptimalValues();
+    }
   }
 }
 
